@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<link rel="stylesheet" href="style.css">
+	</head>
+
+	<body>
+
+		<div class="logo">
+				<img src="figures/dvd.png" alt="logo" hspace="0"/>
+		</div>
+
+		<div class="topLegend"> 
+				<h> SQUAD R Package </h> 
+		</div>
+
+
+		<div class="leftPanel"> 
+			<ol class="leftPanel">
+				<li> <a href="index.html">About</a> </li>
+				<li> <a href="index.html">Overview</a> </li>
+				<li> <a href="installation.html">Installation</a> </li>
+				<li> <a href="loading.html">Loading network models</a>
+					<ol> 
+						<li> <a href="#h2_format">SQUAD format</a> </li>
+						<li> 
+						      <a href="#h2_startBoolNet">Starting from discrete models</a> 							</li>
+						<li> 
+						      <a href="#h2_startMatrix">Starting from connectivity matrices</a> 
+						</li>	
+					</ol>
+				</li>
+				<li> <a href="simulations.html">Running simulations</a>
+					<ol>
+						<li> <a href="#h2_initial">Setting initial conditions</a> </li>
+						<li> <a href="#h2_pert">Simulating perturbations</a> </li>
+						<li> <a href="#h2_mut">Fixed environments</a> </li>
+						<li> <a href="#h2_norm">Normalized Hill Cubes</a></li>
+						<li> <a href="#h2_plot">Plotting</a></li>
+					</ol>
+				</li>
+				<li> <a href="steadyStates.html">Steady States Search</a></li>
+				<li> <a href="biological.html">Biological model examples</a></li>
+				<li> <a href="performance.html">Performance</a></li>
+			</ol>
+		</div>
+
+		
+<div class="rigthSection">
+
+<!--  ---------------Installation----------------------------------------------------------- -->		
+<h2> 3. Installation </h2>	
+	
+	<p> SQUAD R Package installation may require prior instalation of curl and xml packages. 
+Please, check if they are currently installed. On linux system you can execute the following command in the 
+system shell to install both packages, as detailed 
+<a href="https://stackoverflow.com/questions/20671814/non-zero-exit-status-r-3-0-1-xml-and-rcurl">
+here</a>.
+</p>
+
+<code class="installation" > sudo apt-get install libcurl4-openssl-dev libxml2-dev </code>
+
+	<p> To install SQUAD please install devtools library by running the following command on R:</p>
+ 
+<code class="installation"> > install.packages(devtools)</code>.
+
+	<p> Then, install the SQUAD package from the repository using the next command on R:</p>
+
+<code class="installation">
+> library(devtools) <br>
+> install_github("caramirezal/SQUAD/SQUAD") <br> 
+</code>
+
+<p>Finally, you can load the library using the standard R form: </p>
+
+<code class="installation"> > library(SQUAD)</code>
+
+<br>
+
+<p class="next"> <a href="installation.html">Next >></a> </p>
+
+</div>
+
+	</body>
+</html>

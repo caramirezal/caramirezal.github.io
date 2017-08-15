@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<link rel="stylesheet" href="style.css">
+	</head>
+
+	<body>
+
+		<div class="logo">
+				<img src="figures/dvd.png" alt="logo" hspace="0"/>
+		</div>
+
+		<div class="topLegend"> 
+				<h> SQUAD R Package </h> 
+		</div>
+
+
+		<div class="leftPanel"> 
+			<ol class="leftPanel">
+				<li> <a href="index.html">About</a> </li>
+				<li> <a href="index.html">Overview</a> </li>
+				<li> <a href="installation.html">Installation</a> </li>
+				<li> <a href="loading.html">Loading network models</a>
+					<ol> 
+						<li> <a href="loading.html#h2_format">SQUAD format</a> </li>
+						<li> 
+						      <a href="loading.html#h2_startBoolNet">Starting from discrete models</a> 							</li>
+						<li> 
+						      <a href="loading.html#h2_startMatrix">Starting from connectivity matrices</a> 
+						</li>	
+					</ol>
+				</li>
+				<li> <a href="simulations.html">Running simulations</a>
+					<ol>
+						<li> <a href="simulations.html#h2_initial">Setting initial conditions</a> </li>
+						<li> <a href="simulations.html#h2_pert">Simulating perturbations</a> </li>
+						<li> <a href="simulations.html#h2_mut">Fixed environments</a> </li>
+						<li> <a href="simulations.html#h2_norm">Normalized Hill Cubes</a></li>
+						<li> <a href="simulations.html#h2_plot">Plotting</a></li>
+					</ol>
+				</li>
+				<li> <a href="steadyStates.html">Steady States Search</a></li>
+				<li> <a href="biological.html">Biological model examples</a></li>
+				<li> <a href="performance.html">Performance</a></li>
+			</ol>
+		</div>
+
+		
+<div class="rigthSection">
+
+<!------------------Running simulations----------------------------------------------->
+<h3> 5. Running simulations</h3>
+
+<p> Once we have a continuous Regulatory Network (RN) squad object, simulations can be carried out. The
+squad() function was designed to be a platform for setting simulation parameters, performing simulations,
+and optionally plotting results. To make easier the process of running simulations squad() take several 
+default options. To show this, you can easily generate a time serie plot by passing a "BooleanNetwork"
+or "squad" object without no other arguments as carried out in next lines. </p>
+
+<code> 
+> ## Loading network <br>
+> net <- loadNetwork.sq("cartoonNetwork.R") <br>
+> <br>
+> ## running simulation <br>
+> squad(net) <br>
+<br>
+</code>
+
+<img src="figures/noArguments.png" class="tutorial">
+
+<p> As no initial values were given, squad() by default starts at one randomly choosen point sampled from unit 
+multidimensional square [0,1]<sup>n</sup>, where <i>n</i> is the number of nodes. However, SQUAD is
+also flexible and allows to define initial values and parameters for the simulation as well. 
+In this section, we describe how to set up simulation squad() parameters. </p>
+
+
+<!----------Setting initial conditions------------------------------------------------------>
+
+<h3 id="h2_initial"> 5.1. Setting initial conditions</h3>
+
+<p> SQUAD methodology consist of a set of <i>n</i> Ordinary Differential Equations 
+<a href="http://www.ncbi.nlm.nih.gov/pubmed/23743337" >[1]</a>. Each differential equation defines the
+level of activation of a node depending on the state of activation of its regulators. SQUAD ODEs
+have two main parameters <i>h<sub>i</sub></i> and &gamma;<i><sub>i</sub></i>, representing gain of the
+sigmoid curve and the decay rate for the molecule, respectively. By default, <i>h<sub>i</sub> = 50</i> 
+and &gamma;<sub>i</sub><i> = 1</i>. However, these parameters along with initial conditions can be 
+defined using squad() as follows: </p>
+
+<code>
+> ## setting initial conditions and parameters <br>
+> initialState <- c(0.1,0.85,0.85) <br>
+> h <- rep(5,length(net$genes)) <br>
+> gamma <- rep(1,length(net$genes)) <br>
+> parameters <- list("h"=h,"gamma"=gamma) <br>
+> <br>
+> ## runnning simulation <br>
+> squad(net,initialState = initialState,parameters = parameters) <br>
+<br>
+</code>
+
+<img src="figures/parametersSetting.png" class="tutorial">
+
+<p> Note that parameters must be passed as a list of named vectors containing the values of length
+<i>n</i> containing the values for all <i>h<sub>i</sub></i> and &gamma;<i><sub>i</sub></i>. In this
+simulation the initial values of the nodes were setted to <code>(0.1,0.85,0.85)</code>. The simulation 
+time duration and integration length interval can be adjusted using the timePeriod and lengthInterval
+parameters as coded next following the previuos example. </p>
+
+<code> 
+> squad(net, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;initialState = initialState, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters = parameters.sq, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timePeriod = 30, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lengthInterval = 0.5) <br>
+<br>
+</code>
+
+
+
+<img src="figures/simulationTime.png" class="tutorial">
+
+<p> Note that the virtual time of the simulation is now from <code>0</code> to <code>10</code> and
+the time intervals are now (<code>= 0.5</code>). In general, squad() integration methods can be 
+adjusted by passing ode() function arguments (with some exceptions, please see <code>?squad</code> for details). 
+For more details about ode() function arguments see deSolve documentation <a href="https://cran.r-project.org/web/packages/deSolve/index.html">here</a>. </p>
+
+<br>
+
+<!-------------------Simulating perturbations----------------------------------------------------->
+<h3 id="h2_pert"> 5.2. Simulating perturbations</h3>
+
+<p> Node perturbations can mimic transitory extracellular signals or intrinsic gene expression noise.
+SQUAD R package can be used to simulate transitory node perturbations. Perturbations most be setted up
+by switching perturbations to <code>TRUE</code> and the specifying the type of event. Events are defined
+as the same as in ode(), see <a href="https://cran.r-project.org/web/packages/deSolve/index.html">deSolve</a> documentation for details. Briefly, events are define as a dataframe containing the following named vectors:
+ </p>
+
+<ol>
+	<li>. <b>var</b> - string name(s) of the node(s) to be perturbed</li>
+	<li>. <b>time</b> - numerical value(s) of perturbation(s) time</li>
+	<li>. <b>value</b> - numerical magnitude(s) of the perturbations</li>
+	<li>. <b>method</b> - string name(s) of the perturbation implemented. It can be "replace", "add", etc, ...</li>  
+</ol>
+
+<p>In the next example, initial values are set up to a stationary state <code>(A=0,B=0,C=1)</code> and then
+a perturbation in nodes A and B is given at times 2.1 and 4, respectively. The first perturbation consist in
+replacing the value of B by 0.85 and the second is defined as the addition of -0.6 (in fact a sustraction) to 
+the value of C.</p>
+
+<code> 
+> initialState <- c(0,0,1) <br>
+> events <- data.frame("var"=c("B","C"), <br>
+</code>
+<code class="indented">
+"time"=c(2.1,4), <br>
+</code>
+<code class="indented">     
+"value"=c(0.85,-0.6), <br>
+</code>
+<code class="indented">
+"method"=c("replace","add")) <br>
+</code>
+<code>
+> squad(cartoonNet,initialState = initialState,perturbations = TRUE,events = events) <br>
+<br>
+</code>
+
+<img src="figures/perturbations.png" class="tutorial">
+
+<p>As expected, at the beginning of the simulation the dynamic did not change because initial values are
+are stationary. Then, perturbations occur at defined times. However, perturbations vanish with time and
+system returns to the starting stationary state. Perturbation events can be so defined in complex manners,
+to see more details about events definition please consult <i>deSolve</i> documentation.
+</p>
+
+<br>
+
+<!--------Fixed environments--------------------------------------------------------->
+<h3 id="h2_mut"> 5.3. Fixed environments</h3>
+
+<p> Constant stimulus and gain/loss of function mutations can be simulated by fixing node values. This
+kind of simulation can be performed by using <code>squad()</code> using its parameter <code>fixed</code>.
+A numeric vector must be passed to this parameter named according to the nodes to be fixed.
+The following code exemplifies this.
+</p>
+
+<code>
+> ## fixing A to 0.5 <br>
+> fixed <- c("A"=0.5) <br>
+> initialState <- c(0,0.85,0.5)  <br>
+> <br>
+> ## running simulation <br>
+> squad(cartoonNet,initialState = initialState,fixed = fixed) <br>
+</code>
+
+<p>In the previous code, the node <code>A</code> was fixed to a <code>0.5</code> low value.  </p> 
+
+<img src="figures/fixedEnvironments.png" class="tutorial">
+
+<p> Under these circunstances a new stationary state with intermediate values of <code>0.5</code> 
+for all nodes is found as can be seen from the trajectory plot.
+</p>
+
+<br>
+
+<!-------------Normalized Hill Cubes------------------------------------------------------>
+<h3 id="h2_norm"> 5.4. Normalized Hill Cubes</h3>
+
+<p>There are various continuous formalisms to interpolate BRN models. For a review of them,  
+<a href="https://bmcsystbiol.biomedcentral.com/articles/10.1186/1752-0509-3-98"> see</a>.
+SQUAD includes normalized hill cubes (NHC) formalism which has some advantages regarding differentiability 
+propierties. NHC ODE equations have three parameters
+<i>n, k,</i> and <i>&gamma;</i>. The parameters <i>n and k</i> determines the slope of the curve
+and the boolean thresold, respectively. Parameter &gamma; as in squad formalism determines
+the molecular decay rate. Simulation formalism can be switched to NHC by setting the parameter 
+type="normHillCubes" as exemplified in the next code.
+</p> 
+
+<code> 
+> initialState <- c(0.5,0.5,0.5) <br>
+> n <- rep(50,length(cartoonNet)) <br>
+> k <- rep(0.5,length(cartoonNet)) <br>
+> gamma <- rep(1,length(cartoonNet)) <br>
+> parameters.hc <- list("n"=n,"k"=k,"gamma"=gamma) <br>
+> squad(cartoonNet, <br>
+</code>
+<code style="padding-left:120px;"> 
+initialState = initialState, <br>
+</code>
+<code style="padding-left:120px;">
+parameters = parameters.hc, <br>
+</code>
+<code style="padding-left:120px;">
+timePeriod = 30, <br>
+</code>
+<code style="padding-left:120px;">
+type = "normHillCubes")  <br>
+<br>
+</code>
+
+<img src="figures/normHillCubes.png" class="tutorial">
+
+<p>In the simulation, all node valuess were setted to <code>0.5</code>. The parameters <i>n, k</i> and &gamma; were 
+defined as 50, 0.5 and 1 for each node. Note that, as can be seen intuitively from the graph of the
+network given in <b>Section 4.1</b>, <b>A</b> is an input of the network and therefore does not depends on 
+<b>B</b> and <b>C</b>. <b>B</b> and <b>C</b> 
+negatively regulate each other, hence they are expected to cancelled out each other activation
+or stay in a balanced intermediate value in which none of the can inhibit the other. However, 
+<b>A</b> is positve regulator of <b>B</b> and therefore, it is expected that <b>A</b> skew the 
+balanced state of <b>A</b> and <b>B</b>, to a new one in which B is more active which is the observed behavior
+in simulation. One interesting exercise, would be to run the simulation changing type (and parameters) 
+to default to see what happen in the squad formalism.</p>
+
+<!--------------Plotting-------------------------------------------------------------->
+
+<h3 id="h2_plot"> 5.5. Plotting </h3>
+
+<p>In the previous sections, time series plots has been used. However, time series are not good at
+plotting the dynamic of several nodes at the same time. Plotting more than a dozen nodes values
+in a single time serie plot tends to make harder to distinguish color coding. Additionally, curves
+tends to overlap. Heatmaps are more flexible for plotting several node factors. The dynamic of the
+network can be plotted using heatmaps by setting the parameter plot="heatmap" in <code>squad()</code> 
+function. In the next plot we use cellcycle BooleanNetwork.</p>
+
+<code>
+> data("cellcycle") <br>
+> initialState <- rep(0,length(cellcycle$genes)) <br>
+> squad(cellcycle, <br>
+</code>
+<code style="padding-left:120px;">
+initialState = initialState, <br>
+</code>
+<code style="padding-left:120px;">
+plot = "heatmap", <br>
+</code>
+<code style="padding-left:120px;">
+colorLevels = 30) <br>
+<br>
+</code>
+
+<img src="figures/heatmap.png" class="tutorial">
+
+<p>The grading of the color heatmap can be tunned by adjusting <code>colorLevels</code> parameter.
+Although, heatmap is a very usefull tool to visualize network dynamics this method has also caveats
+when plotting for example network with few nodes and when the time period is too long. For that reason,
+plot parameter also includes the option "raw". When this option is used the output of squad() is a
+matrix raw data, so the user can then choose other plot R functions packages, for example ggplot2.
+</p>
+
+<code>
+> dynamic <- squad(cellcycle,initialState = initialState,plot = "raw") <br>
+> dynamic <br>
+<br>
+</code>
+
+
+<p style="word-spacing:80px;padding-left:80px;"> time CycD          Rb         E2F         CycE         CycA         p27        Cdc20        Cdh1      UbcH10 
+</p>
+<p style="word-spacing:30px;">
+[1,] 0.00    0 0.000000000 0.000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00 0.000000000 0.000000000 <br>
+[2,] 0.01    0 0.009950248 0.009950248 4.455076e-14 4.455076e-14 0.009950248 4.455076e-14 0.009950248 0.009950248 <br>
+[3,] 0.02    0 0.019801489 0.019801489 2.055319e-13 2.055319e-13 0.019801489 2.055319e-13 0.019801489 0.019801489 <br>
+[4,] 0.03    0 0.029554708 0.029554708 5.541270e-13 5.541270e-13 0.029554708 5.541270e-13 0.029554708 0.029554708 <br>
+[5,] 0.04    0 0.039210759 0.039210759 1.188807e-12 1.188807e-12 0.039210759 1.188807e-12 0.039210759 0.039210759 <br>
+[6,] 0.05    0 0.048770771 0.048770771 2.302742e-12 2.302742e-12 0.048770771 2.302742e-12 0.048770771 0.048770771 <br>
+</p>
+
+<br>
+
+<p class="next"> <a href="installation.html">Next >></a> </p>
+
+<br>
+
+</div>
+
+	</body>
+</html>

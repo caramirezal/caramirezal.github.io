@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<link rel="stylesheet" href="style.css">
+	</head>
+
+	<body>
+
+		<div class="logo">
+				<img src="figures/dvd.png" alt="logo" hspace="0"/>
+		</div>
+
+		<div class="topLegend"> 
+				<h> SQUAD R Package </h> 
+		</div>
+
+
+		<div class="leftPanel"> 
+			<ol class="leftPanel">
+				<li> <a href="index.html">About</a> </li>
+				<li> <a href="index.html">Overview</a> </li>
+				<li> <a href="installation.html">Installation</a> </li>
+				<li> <a href="loading.html">Loading network models</a>
+					<ol> 
+						<li> <a href="loading.html#h2_format">SQUAD format</a> </li>
+						<li> 
+						      <a href="loading.html#h2_startBoolNet">Starting from discrete models</a> 							</li>
+						<li> 
+						      <a href="loading.html#h2_startMatrix">Starting from connectivity matrices</a> 
+						</li>	
+					</ol>
+				</li>
+				<li> <a href="simulations.html">Running simulations</a>
+					<ol>
+						<li> <a href="simulations.html#h2_initial">Setting initial conditions</a> </li>
+						<li> <a href="simulations.html#h2_pert">Simulating perturbations</a> </li>
+						<li> <a href="simulations.html#h2_mut">Fixed environments</a> </li>
+						<li> <a href="simulations.html#h2_norm">Normalized Hill Cubes</a></li>
+						<li> <a href="simulations.html#h2_plot">Plotting</a></li>
+					</ol>
+				</li>
+				<li> <a href="steadyStates.html">Steady States Search</a></li>
+				<li> <a href="biological.html">Biological model examples</a></li>
+				<li> <a href="performance.html">Performance</a></li>
+			</ol>
+		</div>
+
+		
+<div class="rigthSection">
+
+<!-- --------------Loading network models---------------------------------->
+<h2> 4. Loading network models </h2>
+
+<h2 id="h2_format"> 4.1. SQUAD format </h2>
+
+<p> To define a Regulatory Network model using squad formalism it is necessary to define a set of variables nodes 
+and also include regulatory dependencies between them. In squad formalism regulatory dependencies 
+are incorporated to the ordinary differential equations in the form of <i>omega</i> input parameters. 
+The <i>omega</i> input functions are similar to Boolean expressions of the BRN model and can be obtained from them 
+straightforwardly by changing <b>AND</b>, <b>OR</b>, and <b>NOT</b> Boolean operators by the fuzzy logic operators 
+<i>min</i>(), <i>max</i>() and <i>1−x</i> (where <i>x</i> is the value of the input). </p>
+
+<p> In the following sections the example network having the topology shown in the figure will be used. As can be seen,
+This little network is composed by three nodes A, B, and C. A is self regulated, B is positively regulated by
+A whilst C is its negative regulator. Finally, C is negatively regulated by A and B. </p>
+
+<img src="figures/dinamica_minired.jpg" style="padding-left:300px;">
+
+<p> Nodes names and their regulatory dependencies can be given by using squad format. This format is very similar 
+to BoolNet format, see <a href="https://cran.r-project.org/web/packages/BoolNet/index.html">BoolNet</a>
+ R Package for further references. The next lines show the content of a
+squad format saved in a standard .txt file called "cartoonNetwork.txt". </p>
+
+<code>
+
+targets, factors <br>
+A, A <br>
+B, min(A,1-C) <br>
+C, 1 - max(A,B) <br>
+
+</code>
+
+<p> The squad format consist of a text file that includes in its first line the headers “targets, factors”. 
+The following lines contain the names of the variables and fuzzy logic equations of the <i>omega</i> input 
+function separated by a comma. So for example, the associated parameter <omega> for node B is defined as
+<i> w = min</i>(<i>A,1-C</i>). This format can be imported to squad R package by using loadNetwork.sq() as
+shown in the following example.</p>
+
+<code> 
+<br>
+> ## loading network  <br>
+> net.sq <- loadNetwork.sq("cartoonNetwork.txt") <br>
+ <br>
+> ## Initial state definition <br>
+> initialState <- c("A"=0,"B"=1,"C"=0)  <br>
+ <br>
+> ## running simulation <br>
+> squad(net.sq, initialState=initialState, plot= "timeSerie") <br>
+<br>
+
+</code>
+
+<p> The output is shown in the next figure which shows a single trajectory starting  
+from an initial state <code>= c(0,0,1)</code>. </p>
+
+<img src="figures/squadFormat.png" style="width:750px;height:600px;padding-left:100px;">
+
+<p> <br>
+This example also introduces the squad() function. This function allows performing continuous simulations 
+and will be discussed in more detail in section <a href="simulations.html">5 Running simulations</a>.
+The parameter initialState is used to define the initial values of the nodes in the network and plot 
+parameter set to "timeSerie" tells squad() to return a time serie plot of the simulated trajectory.  </p>
+
+<br>
+
+<!-----------------Starting from discrete models-------------------------------->
+
+<h2 id="h2_startBoolNet"> 4.2. Starting from discrete models</h2>
+
+<p> 
+As mentioned aboved, BRN are parameters free simple models focused in simulating the dynamic of the
+network driven by positive or negative (or dual) interactions.
+In practice, it is usually convenient to start with such a simple approach and then transit 
+to more complex formalisms if needed. The SQUAD R package can be used in combination with BoolNet to automate 
+this task as follows.
+</p>
+
+<p>We will use here a BRN model available in the BoolNet R package. The model contains key regulators of the 
+mammalian cell cycle.</p>
+
+<code> 
+> data("cellcycle")  <br>
+> cellcycle
+</code>
+
+<br>
+<br>
+
+<div class="output">
+	<code>
+Boolean network with 10 genes <br>
+<br>
+Involved genes: <br>
+CycD Rb E2F CycE CycA p27 Cdc20 Cdh1 UbcH10 CycB <br>
+<br>
+Transition functions: <br
+CycD = CycD <br>
+Rb = (! CycA & ! CycB & ! CycD & ! CycE) | (p27 & ! CycB & ! CycD) <br>
+E2F = (! Rb & ! CycA & ! CycB) | (p27 & ! Rb & ! CycB) <br>
+CycE = (E2F & ! Rb) <br>
+CycA = (E2F & ! Rb & ! Cdc20 & ! (Cdh1 & UbcH10)) | (CycA & ! Rb & ! Cdc20 & ! (Cdh1 & UbcH10)) <br>
+p27 = (! CycD & ! CycE & ! CycA & ! CycB) | (p27 & ! (CycE & CycA) & ! CycB &! CycD) <br>
+Cdc20 = CycB <br>
+Cdh1 = (! CycA & ! CycB) | (Cdc20) | (p27 & ! CycB) <br>
+UbcH10 = ! Cdh1 | (Cdh1 & UbcH10 & (Cdc20 | CycA | CycB)) <br>
+CycB = ! Cdc20 & ! Cdh1 <br>
+
+	</code>
+</div>
+
+<p>
+The cellcycle object belongs to BooleanNetwork class as that defined by the BoolNet R package. Using 
+asContinuous() this object can be automatically transformed to a continuous interpolation. In the next 
+code, cellcyle BooleanNetwork object is transformed to cellcycle.sq squad object.
+</p>
+
+<code>
+> ## cellcycle "BooleanNetwork" interpolated to cellcycle.sq <br>
+> ## continuous model <br>
+> cellcycle.sq <- asContinuous(cellcycle) <br>
+> <br>
+> ## initial State definition <br>
+> initialState <- rep(0,length(cellcycle$genes)) <br>
+> <br>
+> ## running simulation <br>
+> squad(cellcycle, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;initialState = initialState, <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plot = "timeSerie", <br>
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timePeriod = 20) <br>
+
+</code>
+
+<p> </p>
+
+<img src="figures/startingFromDiscrete.png" style="width:850px;height:700px;padding-left:100px;">
+
+<br>
+
+<p> In this example, we started the simulation with all genes equal to <code>0/OFF</code>. The 
+parameter timePeriod was used to set virtual time duration in the simulation. From the image, it 
+can be seen that the network trajectory became stationary at values <code>= 0.5</code> for all nodes except for cycD 
+which has a value equal to <code>0</code>.
+</p>
+
+
+<!-------------STARTING FROM CONNECTIVITY MATRICES-------------------------------->
+
+<h2 id="h2_startMatrix"> 4.3. Starting from connectivity matrices</h2>
+
+<p> For the vast majority of regulatory interactions only information regarding direction and type 
+(positive, negative, or dual) is available. This qualitative information can
+be represented by graphs or adjacency matrices. An adjacency matrix <b>M</b> 
+representing a network can be defined as square matrix that contains nodes names in both columns 
+and rows. Every entry <b>m</b><sub>i,j</sub> takes the values 1, -1, or 0 if there is a positive, negative or
+no interaction from node <i>i</i> to <i>j</i>, respectively. So defined static representation
+of a regulatory network is frequently referred as the network <i>topology</i>.
+</p>
+
+<p> It is very useful to automate the definition of a dynamic BRN model by means of its 
+network topology. SQUAD R package incorporates the graphToModel() function to automate this task.
+In the following example, a random connectivity matrix is defined using the randomMatrix() function.
+The output of randomMatrix() is a square matrix R object. The parameter matrixDimension is set up 
+to 10 and defines the number of nodes. 
+The adjacency matrix is then transformed to a BRN model using graphToModel() function.
+
+ </p>
+
+<code>
+> ## getting a random connectivity matrix of 10 nodes <br>
+> adjMatrix <- randomMatrix(matrixDimension=10) <br>
+> <br>
+> ## connectivity matrix to BRN model  <br>
+> net.b <- graphToModel(adjMatrix) <br>
+> <br>
+> ## plotting the graph <br>
+> plotNetworkWiring(net.b) <br>
+</code>
+
+<p> </p>
+
+<img src="figures/randomMatrix.png"  style="padding-left:200px;width:600px;height:600px;">
+
+<p> The figure shows the network topology as defined by the connectivity matrix defined
+using randomMatrix(). In real cases, adjacency matrices
+for biological regulatory networks can be obtained from available data bases or by using
+inference methods from high-throughput expression data. <p>
+
+<p>Then, asContinuous() function can be applied to <code>net.b</code> 
+BooleanNetwork object to obtain a squad interpolation as shown in the next code lines.
+</p>
+
+<br>
+<code>
+> ## BRN to squad <br>
+> net.sq <- asContinuous(net.b)  <br>
+> <br>
+> ## running simulation <br>
+> squad(net.sq, initialState = rep(0,length(net.sq$genes)),plot = "timeSerie") <br>
+</code>
+
+<br>
+
+<img src="figures/startingFromMatrix.png" style="padding-left:200px;width:600px;height:600px;">
+
+<br>
+
+<p> It is noteworthy to say that the modeller can end up with a BRN discrete model or transit to a continuous interpolation depending on the modeling requirements.</p>
+
+
+<p class="next"> <a href="installation.html">Next >></a> </p>
+
+<!------------------------------------------------------------------>
+
+<br>
+
+</div>
+
+	</body>
+</html>
