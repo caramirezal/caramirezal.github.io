@@ -52,20 +52,50 @@
 <!--  ---------------Installation----------------------------------------------------------- -->		
 <h2> 3. Installation </h2>	
 	
-	<p> SQUAD R Package installation may require prior instalation of curl and xml packages. 
+	<p> SQUAD R Package installation may require prior instalation of libcurl and xml packages. 
 Please, check if they are currently installed. On linux system you can execute the following command in the 
 system shell to install both packages, as detailed 
 <a href="https://stackoverflow.com/questions/20671814/non-zero-exit-status-r-3-0-1-xml-and-rcurl">
 here</a>.
 </p>
 
-<code class="installation" > sudo apt-get install libcurl4-openssl-dev libxml2-dev </code>
+<code class="installation" > 
+> sudo apt-get install libcurl4-openssl-dev libxml2-dev <br>
+> sudo apt-get install libcurl4-openssl-dev libssl-dev <br>
+> sudo apt-get update <br>
+ </code>
 
 	<p> To install SQUAD please install devtools library by running the following command on R:</p>
  
-<code class="installation"> > install.packages(devtools)</code>.
+<code class="installation"> > install.packages("devtools")</code>.
 
-	<p> Then, install the SQUAD package from the repository using the next command on R:</p>
+<p> Correct rJava installation is critical to install the package. Installing rJava can be tricky, 
+you may need to update your Java version system and then run the following commands on shell as 
+suggested <a href="https://stackoverflow.com/questions/12872699/error-unable-to-load-installed-packages-just-now/25932828#25932828?newreg=355546cf7dd64fa2a26de0ac0ad3fdeb">
+here</a>. </p>
+
+<code class="installation"> 
+> /usr/lib/jvm/java-8-oracle/jre/lib/amd64 <br>
+> /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server <br>
+> sudo ldconfig <br>
+</code>
+
+<p> Then, restart Rstudio and install rJava.   </p>
+
+<code class="installation">
+> sudo apt-get install r-cran-rjava <br>
+</code>
+
+<p> <b>WINDOWS NOTES: </b> In windows systems rJava may require to follow the steps suggested
+<a href="https://www.r-statistics.com/2012/08/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/">
+here </a>. Download the latest version of Java available <a href="https://www.java.com/en/download/"> here </a>,
+install it in your system and then load rJava Package as usual in R using the following command or Rstudio.</p>
+ 
+<code> 
+> install.packages("rJava") <br>
+</code>
+
+	<p> Finally, install the SQUAD package from the repository using the next command on R:</p>
 
 <code class="installation">
 > library(devtools) <br>
