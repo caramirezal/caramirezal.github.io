@@ -51,12 +51,17 @@
 
 <!--  ---------------Installation----------------------------------------------------------- -->		
 <h2> 3. Installation </h2>	
+
+<p> In theory, SQUAD installation can be done easily by installing and loading "devtools" R package and then using the 
+<code> install_github </code> command in R. However, it is strongly suggested to install dependencies
+prior to installation and checking they are working properly. SQUAD has the following dependencies: 
+rJava, BoolNet, deSolve and reShape2. Here, I provide some notes for installing dependencies. </p>
 	
-	<p> SQUAD R Package installation may require prior instalation of libcurl and xml packages. 
+	<p> BoolNet and devtools installation may require prior instalation of libcurl and xml packages. 
 Please, check if they are currently installed. On linux system you can execute the following command in the 
 system shell to install both packages, as detailed 
 <a href="https://stackoverflow.com/questions/20671814/non-zero-exit-status-r-3-0-1-xml-and-rcurl">
-here</a>.
+here</a>. 
 </p>
 
 <code class="installation" > 
@@ -65,7 +70,7 @@ here</a>.
 > sudo apt-get update <br>
  </code>
 
-	<p> To install SQUAD please install devtools library by running the following command on R:</p>
+	<p> Install devtools library by running the following command on R:</p>
  
 <code class="installation"> > install.packages("devtools")</code>.
 
@@ -86,10 +91,11 @@ here</a>. </p>
 > sudo apt-get install r-cran-rjava <br>
 </code>
 
-<p> <b>WINDOWS NOTES: </b> In windows systems rJava may require to follow the steps suggested
+<p> <b>WINDOWS NOTES: </b> In windows systems rJava installation may require to follow the steps suggested
 <a href="https://www.r-statistics.com/2012/08/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/">
-here </a>. Download the latest version of Java available <a href="https://www.java.com/en/download/"> here </a>,
-install it in your system and then load rJava Package as usual in R using the following command or Rstudio.</p>
+here </a>. Download the latest version of Java available <a href="https://www.java.com/en/download/">here</a>,
+install it in your system and then load rJava Package as usual in R using the following command or Rstudio
+as follows:</p>
  
 <code> 
 > install.packages("rJava") <br>
