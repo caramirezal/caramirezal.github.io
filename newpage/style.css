@@ -1,0 +1,21 @@
+/* ---------------------------------------------------------------------
+   top panel especifications
+  */
+div.topPanel {
+    background-color: darkslategray;
+    float: left;
+}
+
+p.topPanel {
+    color: beige;
+    float: right;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+p.topPanelContact {
+    color: beige;
+    float: left;
+    font-weight: bold;
+    font-size: 20px;
+}
