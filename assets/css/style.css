@@ -207,12 +207,12 @@ img.rotate270 {
 	letter-spacing: -1px;
 
 }
-.navbar-inverse .navbar-brand a:hover {
+.navbar-inverse .navbar-brand a:hover:visited {
 	color: #ffffff;
     
 }
 .navbar-inverse .navbar-nav > li > a {
-color: #999;
+color: #fff;
 }
 
 /*=======================================
@@ -225,7 +225,6 @@ color: #999;
     margin: 30px 0px;
     list-style: none;
     text-align: center;
-  
 }
 
 .plan li {
@@ -235,7 +234,7 @@ font-size: 15px;
 }
 
 .plan li.plan-head {
-   padding: 15px 0px;
+padding: 15px 0px;
 color: #FFFFFF;
 line-height: 20px;
 font-size: 20px;
