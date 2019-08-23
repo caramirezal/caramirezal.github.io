@@ -368,7 +368,7 @@ summary {
 
 <div id="intro" class="section level1">
 <h1>Intro</h1>
-<p>In this lecture we will revise basics concepts on tabular arrays as dataframes and matrices. First, we will load some example data to work with. Download the example data from this <a href="https://github.com/caramirezal/dataScience/raw/master/data/INFORMACION_109_229362.zip">link</a> and unzip the files into your current directory. Load the ‘8 LGT_Art_70_Fr_VIII_1er semestre_229363.tsv’ file into a dataframe by using the following readxl function. This data was downloaded from CONACYT web page and contains informations about the salaries in that institution.</p>
+<p>In this lecture we will revise basics concepts on dataframes. Dataframes are tabular arrays where columns are able to store variables from different types, for example, we can have a column with numeric data for the weight and another column specifying some treatment which can be the name of certain drug and hence correspond to a categorical value. First, we will load some example data to work with. Download the example data from this <a href="https://github.com/caramirezal/dataScience/raw/master/data/8%20LGT_Art_70_Fr_VIII_1er%20semestre_229363.tsv">link</a> into your current directory. Load the ‘8 LGT_Art_70_Fr_VIII_1er semestre_229363.tsv’ file into a dataframe by using the function read.table(). This data was downloaded from CONACYT web page and contains informations about the salaries in that institution.</p>
 <pre class="r"><code>sueldos &lt;- read.table('8 LGT_Art_70_Fr_VIII_1er semestre_229363.tsv',
                       sep='\t',
                       skip = 5,
@@ -902,7 +902,7 @@ head(gender)                               ## head also works for vectors</code>
 </div>
 <div id="dataframes-filtering" class="section level3">
 <h3>Dataframes filtering</h3>
-<p>A condition can be provided instead of the vector of indexes. In that case, the rows or columns which satisfies teh conditions are keeped.</p>
+<p>A condition can be provided instead of the vector of indexes. In that case, the rows or columns which satisfies the condition are keeped.</p>
 <p>For example, let’s extract all the female employes.</p>
 <pre class="r"><code>head(sueldos[sueldos$'SEXO..CATÁLOGO.' == 'Femenino', 1:5])</code></pre>
 <pre><code>##           ID FECHA.CREACION FECHA.MODIFICACION EJERCICIO
@@ -919,6 +919,7 @@ head(gender)                               ## head also works for vectors</code>
 ## 9                                       42004
 ## 11                                      42004
 ## 12                                      42004</code></pre>
+<p>NOTE: <code>sueldos$'SEXO..CATÁLOGO.' == 'Femenino'</code> compares the gender column with the corresponding value in every entry and the result is a logical vector, where the final dataframe is composed by the rows which satisfies the condition.</p>
 </div>
 </div>
 
