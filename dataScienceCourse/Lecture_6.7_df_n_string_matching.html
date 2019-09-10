@@ -458,6 +458,8 @@ length(diccionario)</code></pre>
 </div>
 <div id="grepcha.cha---a-word-having-any-character-between-cha-and-cha." class="section level2">
 <h2>grep(‘cha(.)cha’) - A word having <em>any character</em> between cha and cha.</h2>
+<p>Parenthesis ‘()’ - refers multiple characters.</p>
+<p>Dot ‘.’ - means any character.</p>
 <pre class="r"><code>head(
         grep('cha(.)cha', diccionario, value = TRUE)
 )</code></pre>
@@ -482,6 +484,7 @@ length(diccionario)</code></pre>
 </div>
 <div id="grepcha2---repeated-cha-at-least-two-times." class="section level2">
 <h2>grep(’(cha){2}) - Repeated cha at least two times.</h2>
+<p>Braces ‘{k}’ - means k repetitions.</p>
 <pre class="r"><code>head(
         grep('(cha){2}', diccionario, value = TRUE)
 )</code></pre>
