@@ -1,3 +1,7 @@
+## Personal web page -- WORK IN PROGRESS --
+
+The template used to construct this website was develloped by <a href="https://github.com/randal-sean-harrison/academic-website-template" title="Randal Sean Harrison">.
+
 <h1>Academic Website Template</h1>
 
 <p>This is a free thing. You may download this and use it to create your own website(s), as long as you abide by the license restrictions.</p>
