@@ -1,6 +1,6 @@
 ## Personal web page -- WORK IN PROGRESS --
 
-The template used to construct this website was develloped by <a href="https://github.com/randal-sean-harrison/academic-website-template" title="Randal Sean Harrison">.
+The template used to construct this website was develloped by <a href="https://github.com/randal-sean-harrison/academic-website-template" title="develloper"> Randal Sean Harrison</a>.
 
 <h1>Academic Website Template</h1>
 
