@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="IRTG COURSE: INTRODUCTION TO R" />
+  <title>3 Feature selection | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="standard-preprocessing-using-seurat.html"/>
+<link rel="prev" href="standard-preprocessing-using-seurat.html"/>
+<link rel="next" href="normalization.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -169,95 +169,41 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">IRTG COURSE: INTRODUCTION TO R</h1>
-<p class="author"><em>Carl Herrmann &amp; Carlos Ramirez</em></p>
-<p class="date" style="margin-top: 1.5em;"><em>08 June, 2021</em></p>
-</div>
-<div id="intro" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> scRNA-Seq Course Syllabus</h1>
-<p>We will use available data from 10X genomics of Peripheral Blood Mononuclear cells (PBMC). In order
-to speed up the process only a subset of 500 cells are going to be processed here. Here, we will
-perform the following tasks:</p>
-<ul>
-<li>Definition of a Seurat object from a matrix of counts</li>
-<li>Quality Control (QC) of the cell samples</li>
-<li>Filtering</li>
-<li>Dimensional reduction</li>
-<li>Clustering</li>
-<li>Differential expression</li>
-<li>Visualization of markers</li>
-</ul>
-<div id="single-cell-sequencing" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Single Cell Sequencing</h2>
-<p>Single cell sequencing (scRNA-Seq) technologies arise from bulk counterparts with
-the aim of refining gene expression profiles. Previous bulk Sequencing offered
-averaged quantifications of gene expression in samples. In some contexts, for
-example, when studying cell type specificity or the heterogeneity in tumours is
-important to dissect patterns in cell subpopulations.</p>
-<p>The following image illustrates the development of scRNA-Seq technologies
-and the number of cells that can be analyzed with each technology. In this
-course we will not cover this topic, but instead we will take a hands on
-approach and jump directly to the analysis of scRNA-Seq data. However, the
-analysis that we show next are applied downstream to libraries construction
-and sequencing and are therefore platform agnostic.</p>
-<div class="figure">
-<img src="figures/moores-law.png" alt="" />
-<p class="caption"><strong>Single Cell Sequencing Platforms</strong>: Date of development <em>vs</em> number of cells analyzed by each technology.</p>
-</div>
-<p>Image is taken from <a href="https://arxiv.org/abs/1704.01379">Svensson V et al, 2017</a>.</p>
-</div>
-<div id="quantifying-gene-expression-in-single-cells" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Quantifying gene expression in single cells</h2>
-<p>Genes are expressed in cells by the synthesis of mRNA molecules. Quantification of gene expression
-in single cells consists of counting and mapping sequenced reads to each gene in each cell. The
-outcome of this process is a count matrix, which is a discrete matrix of integers corresponding
-to the number of RNA molecules associated to each gene and cell. The count matrix usually has
-genes as rows and cells in columns.</p>
-<p>In the next lines we will load the matrix of UMI counts into a variable called <code>pbmc.mtx</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Dependencies</span></span>
-<span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmarkdown)</span>
-<span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">333</span>)</span>
-<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading example data</span></span>
-<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a>pbmc_url  <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/caramirezal/caramirezal.github.io/raw/master/bookdown-minimal/data/pbmc_10X_500_cells.mtx.rds&#39;</span></span>
-<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a>pbmc.mtx <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">url</span>(pbmc_url))</span></code></pre></div>
-<p>As can be seen from the output of the function <code>dim(pbmc.mtx)</code> the matrix contains rows (genes) and 500 columns (cells).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(pbmc.mtx)</span></code></pre></div>
-<pre><code>## [1] 13714   500</code></pre>
-<p>To have a glimpse of the appearance of this matrix we print the first 5 rows and first 5 columns. It can
-be seen that the matrix object is a particular array called sparse Matrix. These types of matrices are
-specially efficient to store numerical arrays which are very sparse (full of zeroes) as is the case
-for single cell count matrices data.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a>pbmc.mtx[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
-<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
-##               AAAGAGACGGACTT-1 AAAGATCTGGGCAA-1 AAAGCAGATATCGG-1
-## AL627309.1                   .                .                .
-## AP006222.2                   .                .                .
-## RP11-206L10.2                .                .                .
-## RP11-206L10.9                .                .                .
-## LINC00115                    .                .                .
-##               AAAGTTTGATCACG-1 AAATCAACCCTATT-1
-## AL627309.1                   .                .
-## AP006222.2                   .                .
-## RP11-206L10.2                .                .
-## RP11-206L10.9                .                .
-## LINC00115                    .                .</code></pre>
-<p>We can start from different types of arrays apart from sparse matrices as data frames or hd5
-objects just to give some examples. The format in which the matrix is provided might also vary from
-excel files, tsv, csv, rds, etc. Usually this formats can be converted into each other, however, the
-methods for such transformation are so different and specific that we cannot covered here.</p>
+<div id="feature-selection" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Feature selection</h1>
+<p>Because of the sparsity in the sequencing data many genes or features are almost no expressed.
+Additionally, some genes are constantly expressed across cells. These features are then probably
+not playing any function in cells and on the other hand can just add noise and unnecessary complexity
+to further analysis. Then, it’s usual to remove genes with very low variability and to select
+only top highly variable genes (HVG).</p>
+<p>We will use the function <code>FindVariableFeatures()</code> to calculate the top most variable genes.
+The parameter nfeatures is used to set the number of top selected genes. We set to the top
+1000 features.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="feature-selection.html#cb11-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">FindVariableFeatures</span>(pbmc.seurat, <span class="at">nfeatures =</span> <span class="dv">1000</span>)</span></code></pre></div>
+<p>We can access to the top 1000 variable features using the VariableFeatures function. In the next
+chunk we display the top first 6 (head) of this set.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="feature-selection.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">VariableFeatures</span>(pbmc.seurat))</span></code></pre></div>
+<pre><code>## [1] &quot;S100A9&quot; &quot;LYZ&quot;    &quot;FTL&quot;    &quot;GNLY&quot;   &quot;FTH1&quot;   &quot;S100A8&quot;</code></pre>
+<p>In the next scatter plot we can see the average expression <em>vs</em> the standardized variance for each feature.
+Genes in red are the selected HVG.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="feature-selection.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot variable features with and without labels</span></span>
+<span id="cb14-2"><a href="feature-selection.html#cb14-2" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">VariableFeaturePlot</span>(pbmc.seurat)</span>
+<span id="cb14-3"><a href="feature-selection.html#cb14-3" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">LabelPoints</span>(<span class="at">plot =</span> plot1, </span>
+<span id="cb14-4"><a href="feature-selection.html#cb14-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">points =</span> <span class="fu">head</span>(<span class="fu">VariableFeatures</span>(pbmc.seurat),</span>
+<span id="cb14-5"><a href="feature-selection.html#cb14-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="dv">10</span>), </span>
+<span id="cb14-6"><a href="feature-selection.html#cb14-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">repel =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-7"><a href="feature-selection.html#cb14-7" aria-hidden="true" tabindex="-1"></a>plot1 </span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For further analysis we will use only HVGs.</p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="standard-preprocessing-using-seurat.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="standard-preprocessing-using-seurat.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="normalization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
