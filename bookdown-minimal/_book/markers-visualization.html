@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <title>9 Markers visualization | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="9 Markers visualization | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="9 Markers visualization | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="9 Markers visualization | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="quality-control.html"/>
+<link rel="prev" href="differential-expression-analysis.html"/>
+
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -172,50 +172,70 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="standard-preprocessing-using-seurat" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Standard Preprocessing using Seurat</h1>
-<p>Some standard steps are usually carried out in scRNA-Seq prior to further analysis as QC, dimensional
-reduction and marker visualization. Here, we will use the Seurat R package to perform these steps which
-is increasingly becoming the most popular tool, however, there are some other options as SingleCellExperiment
-in R and scanpy available for python. First, we need to define a Seurat object.</p>
-<div id="creating-seurat-object" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Creating Seurat object</h2>
-<p>We create a Seurat object using the <code>CreateSeuratObject</code> function as follows. Use the <code>?function</code> helper
-in R to get information about the parameters that are need to be provided to the function.</p>
-<ul>
-<li>counts - a count matrix. It can be a matrix, sparse matrix or dataframe.</li>
-<li>project - A single character string. Correspond to a arbitrary name to label the object.</li>
-<li>assay - A single character string. An arbitrary name that usually is assigned to label the
-type of sequencing information, for example, RNA, spliced RNA, ATAC, etc…</li>
-<li>min.cells - An integer. Indicates a threshold of the number of cells for which a feature was
-recorded. Cells belowe that threshold will be filtered out.</li>
-<li>min.features - An integer. Similar to min cells but for the number of features of a cell.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="standard-preprocessing-using-seurat.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb6-2"><a href="standard-preprocessing-using-seurat.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="standard-preprocessing-using-seurat.html#cb6-3" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
-<span id="cb6-4"><a href="standard-preprocessing-using-seurat.html#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> pbmc.mtx, </span>
-<span id="cb6-5"><a href="standard-preprocessing-using-seurat.html#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">project =</span> <span class="st">&#39;PBMC&#39;</span>, </span>
-<span id="cb6-6"><a href="standard-preprocessing-using-seurat.html#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">&#39;RNA&#39;</span>, </span>
-<span id="cb6-7"><a href="standard-preprocessing-using-seurat.html#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">1</span>, </span>
-<span id="cb6-8"><a href="standard-preprocessing-using-seurat.html#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.features =</span> <span class="dv">1</span></span>
-<span id="cb6-9"><a href="standard-preprocessing-using-seurat.html#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p>The variable <code>pbmc.seurat</code> now contains the Seurat object that we can feed into the package.
-If we print the variable we get information about the number of genes and cells.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="standard-preprocessing-using-seurat.html#cb7-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat</span></code></pre></div>
-<pre><code>## An object of class Seurat 
-## 12673 features across 500 samples within 1 assay 
-## Active assay: RNA (12673 features, 0 variable features)</code></pre>
+<div id="markers-visualization" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Markers visualization</h1>
+<p>First, we will take top 10 ranked genes based in Log FC and visualize their
+expression in clusters using a heatmap representation.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="markers-visualization.html#cb31-1" aria-hidden="true" tabindex="-1"></a>top10 <span class="ot">&lt;-</span> pbmc.degs <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="markers-visualization.html#cb31-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">group_by</span>(cluster) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="markers-visualization.html#cb31-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">top_n</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">wt =</span> avg_log2FC)</span>
+<span id="cb31-4"><a href="markers-visualization.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">DoHeatmap</span>(pbmc.seurat, </span>
+<span id="cb31-5"><a href="markers-visualization.html#cb31-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">features =</span> top10<span class="sc">$</span>gene) <span class="sc">+</span> <span class="fu">NoLegend</span>()</span></code></pre></div>
+<p><img src="course_files/figure-html/heatmap-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>IL-7 is a marker for naive CD4+ T cells, while GZMB is a marker for CD8 T cells.
+Then, we can tentatively consider cluster 0 and 2 as CD4 and CD8 T cells,
+respectively.</p>
+<p>We can visualize additional known canonical markers in order to assign cell
+categories.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="markers-visualization.html#cb32-1" aria-hidden="true" tabindex="-1"></a>canonical_markers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;IL7R&#39;</span>,     <span class="do">## CD4+ cell</span></span>
+<span id="cb32-2"><a href="markers-visualization.html#cb32-2" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;CCR7&#39;</span>,     <span class="do">## Naive CD4+ T cell</span></span>
+<span id="cb32-3"><a href="markers-visualization.html#cb32-3" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;CD8A&#39;</span>,     <span class="do">## CD8+</span></span>
+<span id="cb32-4"><a href="markers-visualization.html#cb32-4" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;NKG7&#39;</span>,     <span class="do">## NK</span></span>
+<span id="cb32-5"><a href="markers-visualization.html#cb32-5" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;MS4A1&#39;</span>,    <span class="do">## B cell marker</span></span>
+<span id="cb32-6"><a href="markers-visualization.html#cb32-6" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;FCGR3A&#39;</span>,   <span class="do">## Mono</span></span>
+<span id="cb32-7"><a href="markers-visualization.html#cb32-7" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;FCER1A&#39;</span>,   <span class="do">## DC</span></span>
+<span id="cb32-8"><a href="markers-visualization.html#cb32-8" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&#39;CD14&#39;</span>     <span class="do">## Mono</span></span>
+<span id="cb32-9"><a href="markers-visualization.html#cb32-9" aria-hidden="true" tabindex="-1"></a>                       )</span>
+<span id="cb32-10"><a href="markers-visualization.html#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="markers-visualization.html#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="fu">FeaturePlot</span>(pbmc.seurat, </span>
+<span id="cb32-12"><a href="markers-visualization.html#cb32-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">features =</span> canonical_markers,</span>
+<span id="cb32-13"><a href="markers-visualization.html#cb32-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="course_files/figure-html/umap_markers_vis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now, we will annotate the cells with their identified identities in the seurat
+object. We will map the cluster names as follows:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="markers-visualization.html#cb33-1" aria-hidden="true" tabindex="-1"></a>mapping <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">seurat_cluster=</span><span class="fu">c</span>(<span class="st">&#39;0&#39;</span>, <span class="st">&#39;1&#39;</span>, <span class="st">&#39;2&#39;</span>, <span class="st">&#39;3&#39;</span>),</span>
+<span id="cb33-2"><a href="markers-visualization.html#cb33-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">cell_type=</span><span class="fu">c</span>(<span class="st">&#39;Lymphocyte&#39;</span>, </span>
+<span id="cb33-3"><a href="markers-visualization.html#cb33-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&#39;B cell&#39;</span>, </span>
+<span id="cb33-4"><a href="markers-visualization.html#cb33-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&#39;NK&#39;</span>,</span>
+<span id="cb33-5"><a href="markers-visualization.html#cb33-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&#39;Monocyte&#39;</span>))</span>
+<span id="cb33-6"><a href="markers-visualization.html#cb33-6" aria-hidden="true" tabindex="-1"></a>mapping</span></code></pre></div>
+<pre><code>##   seurat_cluster  cell_type
+## 1              0 Lymphocyte
+## 2              1     B cell
+## 3              2         NK
+## 4              3   Monocyte</code></pre>
+<p>To assign the new labels we can use the map function from the plyr R package
+as follows:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="markers-visualization.html#cb35-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat<span class="sc">$</span><span class="st">&#39;cell_type&#39;</span> <span class="ot">&lt;-</span> plyr<span class="sc">::</span><span class="fu">mapvalues</span>(</span>
+<span id="cb35-2"><a href="markers-visualization.html#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> pbmc.seurat<span class="sc">$</span>seurat_clusters,</span>
+<span id="cb35-3"><a href="markers-visualization.html#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> mapping<span class="sc">$</span>seurat_cluster,</span>
+<span id="cb35-4"><a href="markers-visualization.html#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> mapping<span class="sc">$</span>cell_type</span>
+<span id="cb35-5"><a href="markers-visualization.html#cb35-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Now, we can plot the clusters with the assigned cell types.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="markers-visualization.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(pbmc.seurat, </span>
+<span id="cb36-2"><a href="markers-visualization.html#cb36-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">group.by =</span> <span class="st">&#39;cell_type&#39;</span>,   <span class="do">## set the column to use as category</span></span>
+<span id="cb36-3"><a href="markers-visualization.html#cb36-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">label =</span> <span class="cn">TRUE</span>)  <span class="sc">+</span>          <span class="do">## label clusters</span></span>
+<span id="cb36-4"><a href="markers-visualization.html#cb36-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">NoLegend</span>()                <span class="do">## remove legends</span></span></code></pre></div>
+<p><img src="course_files/figure-html/cell_types-1.png" width="672" style="display: block; margin: auto;" /></p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="quality-control.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="differential-expression-analysis.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

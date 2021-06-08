@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <title>4 Feature selection | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="quality-control.html"/>
+<link rel="prev" href="quality-control.html"/>
+<link rel="next" href="dimensionional-reduction.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -172,50 +172,41 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="standard-preprocessing-using-seurat" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Standard Preprocessing using Seurat</h1>
-<p>Some standard steps are usually carried out in scRNA-Seq prior to further analysis as QC, dimensional
-reduction and marker visualization. Here, we will use the Seurat R package to perform these steps which
-is increasingly becoming the most popular tool, however, there are some other options as SingleCellExperiment
-in R and scanpy available for python. First, we need to define a Seurat object.</p>
-<div id="creating-seurat-object" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Creating Seurat object</h2>
-<p>We create a Seurat object using the <code>CreateSeuratObject</code> function as follows. Use the <code>?function</code> helper
-in R to get information about the parameters that are need to be provided to the function.</p>
-<ul>
-<li>counts - a count matrix. It can be a matrix, sparse matrix or dataframe.</li>
-<li>project - A single character string. Correspond to a arbitrary name to label the object.</li>
-<li>assay - A single character string. An arbitrary name that usually is assigned to label the
-type of sequencing information, for example, RNA, spliced RNA, ATAC, etc…</li>
-<li>min.cells - An integer. Indicates a threshold of the number of cells for which a feature was
-recorded. Cells belowe that threshold will be filtered out.</li>
-<li>min.features - An integer. Similar to min cells but for the number of features of a cell.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="standard-preprocessing-using-seurat.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb6-2"><a href="standard-preprocessing-using-seurat.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="standard-preprocessing-using-seurat.html#cb6-3" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
-<span id="cb6-4"><a href="standard-preprocessing-using-seurat.html#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> pbmc.mtx, </span>
-<span id="cb6-5"><a href="standard-preprocessing-using-seurat.html#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">project =</span> <span class="st">&#39;PBMC&#39;</span>, </span>
-<span id="cb6-6"><a href="standard-preprocessing-using-seurat.html#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">&#39;RNA&#39;</span>, </span>
-<span id="cb6-7"><a href="standard-preprocessing-using-seurat.html#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">1</span>, </span>
-<span id="cb6-8"><a href="standard-preprocessing-using-seurat.html#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.features =</span> <span class="dv">1</span></span>
-<span id="cb6-9"><a href="standard-preprocessing-using-seurat.html#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p>The variable <code>pbmc.seurat</code> now contains the Seurat object that we can feed into the package.
-If we print the variable we get information about the number of genes and cells.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="standard-preprocessing-using-seurat.html#cb7-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat</span></code></pre></div>
-<pre><code>## An object of class Seurat 
-## 12673 features across 500 samples within 1 assay 
-## Active assay: RNA (12673 features, 0 variable features)</code></pre>
+<div id="feature-selection" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Feature selection</h1>
+<p>Because of the sparsity in the sequencing data many genes or features are almost no expressed.
+Additionally, some genes are constantly expressed across cells. These features are then probably
+not playing any function in cells and on the other hand can just add noise and unnecessary complexity
+to further analysis. Then, it’s usual to remove genes with very low variability and to select
+only top highly variable genes (HVG).</p>
+<p>We will use the function <code>FindVariableFeatures()</code> to calculate the top most variable genes.
+The parameter nfeatures is used to set the number of top selected genes. We set to the top
+1000 features.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="feature-selection.html#cb11-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">FindVariableFeatures</span>(pbmc.seurat, <span class="at">nfeatures =</span> <span class="dv">1000</span>)</span></code></pre></div>
+<p>We can access to the top 1000 variable features using the VariableFeatures function. In the next
+chunk we display the top first 6 (head) of this set.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="feature-selection.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">VariableFeatures</span>(pbmc.seurat))</span></code></pre></div>
+<pre><code>## [1] &quot;S100A9&quot; &quot;LYZ&quot;    &quot;FTL&quot;    &quot;GNLY&quot;   &quot;FTH1&quot;   &quot;S100A8&quot;</code></pre>
+<p>In the next scatter plot we can see the average expression <em>vs</em> the standardized variance for each feature.
+Genes in red are the selected HVG.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="feature-selection.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot variable features with and without labels</span></span>
+<span id="cb14-2"><a href="feature-selection.html#cb14-2" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">VariableFeaturePlot</span>(pbmc.seurat)</span>
+<span id="cb14-3"><a href="feature-selection.html#cb14-3" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">LabelPoints</span>(<span class="at">plot =</span> plot1, </span>
+<span id="cb14-4"><a href="feature-selection.html#cb14-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">points =</span> <span class="fu">head</span>(<span class="fu">VariableFeatures</span>(pbmc.seurat),</span>
+<span id="cb14-5"><a href="feature-selection.html#cb14-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="dv">10</span>), </span>
+<span id="cb14-6"><a href="feature-selection.html#cb14-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">repel =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-7"><a href="feature-selection.html#cb14-7" aria-hidden="true" tabindex="-1"></a>plot1 </span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For further analysis we will use only HVGs.</p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="quality-control.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="quality-control.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="dimensionional-reduction.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

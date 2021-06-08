@@ -1,4 +1,7 @@
-# Normalization
+# Dimensionional Reduction
+
+
+## Normalization
 
 There are several methods for normalization of scRNA-Seq data. A commonly
 used strategy is the log normalization which basically corrects sequencing
@@ -21,7 +24,8 @@ pbmc.seurat <- ScaleData(pbmc.seurat)
 ```
 
 
-# Dimensional reduction
+
+## Dimensional reduction
 
 
 The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality

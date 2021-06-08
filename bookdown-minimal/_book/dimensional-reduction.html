@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <title>5 Dimensional reduction | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="5 Dimensional reduction | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="5 Dimensional reduction | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2 Standard Preprocessing using Seurat | IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="5 Dimensional reduction | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="quality-control.html"/>
+<link rel="prev" href="normalization.html"/>
+<link rel="next" href="cell-clustering.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -140,14 +140,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html"><i class="fa fa-check"></i><b>2</b> Standard Preprocessing using Seurat</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#creating-seurat-object"><i class="fa fa-check"></i><b>2.1</b> Creating Seurat object</a></li>
+<li class="chapter" data-level="2.2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#quality-control"><i class="fa fa-check"></i><b>2.2</b> Quality control</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="quality-control.html"><a href="quality-control.html"><i class="fa fa-check"></i><b>3</b> Quality control</a></li>
-<li class="chapter" data-level="4" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>4</b> Feature selection</a></li>
-<li class="chapter" data-level="5" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensionional Reduction</a>
-<ul>
-<li class="chapter" data-level="5.1" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#normalization"><i class="fa fa-check"></i><b>5.1</b> Normalization</a></li>
-<li class="chapter" data-level="5.2" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#dimensional-reduction"><i class="fa fa-check"></i><b>5.2</b> Dimensional reduction</a></li>
-</ul></li>
+<li class="chapter" data-level="3" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>3</b> Feature selection</a></li>
+<li class="chapter" data-level="4" data-path="normalization.html"><a href="normalization.html"><i class="fa fa-check"></i><b>4</b> Normalization</a></li>
+<li class="chapter" data-level="5" data-path="dimensional-reduction.html"><a href="dimensional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensional reduction</a></li>
 <li class="chapter" data-level="6" data-path="cell-clustering.html"><a href="cell-clustering.html"><i class="fa fa-check"></i><b>6</b> Cell clustering</a></li>
 <li class="chapter" data-level="7" data-path="cluster-visualization.html"><a href="cluster-visualization.html"><i class="fa fa-check"></i><b>7</b> Cluster visualization</a>
 <ul>
@@ -172,50 +169,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="standard-preprocessing-using-seurat" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Standard Preprocessing using Seurat</h1>
-<p>Some standard steps are usually carried out in scRNA-Seq prior to further analysis as QC, dimensional
-reduction and marker visualization. Here, we will use the Seurat R package to perform these steps which
-is increasingly becoming the most popular tool, however, there are some other options as SingleCellExperiment
-in R and scanpy available for python. First, we need to define a Seurat object.</p>
-<div id="creating-seurat-object" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Creating Seurat object</h2>
-<p>We create a Seurat object using the <code>CreateSeuratObject</code> function as follows. Use the <code>?function</code> helper
-in R to get information about the parameters that are need to be provided to the function.</p>
-<ul>
-<li>counts - a count matrix. It can be a matrix, sparse matrix or dataframe.</li>
-<li>project - A single character string. Correspond to a arbitrary name to label the object.</li>
-<li>assay - A single character string. An arbitrary name that usually is assigned to label the
-type of sequencing information, for example, RNA, spliced RNA, ATAC, etc…</li>
-<li>min.cells - An integer. Indicates a threshold of the number of cells for which a feature was
-recorded. Cells belowe that threshold will be filtered out.</li>
-<li>min.features - An integer. Similar to min cells but for the number of features of a cell.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="standard-preprocessing-using-seurat.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
-<span id="cb6-2"><a href="standard-preprocessing-using-seurat.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="standard-preprocessing-using-seurat.html#cb6-3" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">CreateSeuratObject</span>(</span>
-<span id="cb6-4"><a href="standard-preprocessing-using-seurat.html#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">counts =</span> pbmc.mtx, </span>
-<span id="cb6-5"><a href="standard-preprocessing-using-seurat.html#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">project =</span> <span class="st">&#39;PBMC&#39;</span>, </span>
-<span id="cb6-6"><a href="standard-preprocessing-using-seurat.html#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">&#39;RNA&#39;</span>, </span>
-<span id="cb6-7"><a href="standard-preprocessing-using-seurat.html#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.cells =</span> <span class="dv">1</span>, </span>
-<span id="cb6-8"><a href="standard-preprocessing-using-seurat.html#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.features =</span> <span class="dv">1</span></span>
-<span id="cb6-9"><a href="standard-preprocessing-using-seurat.html#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p>The variable <code>pbmc.seurat</code> now contains the Seurat object that we can feed into the package.
-If we print the variable we get information about the number of genes and cells.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="standard-preprocessing-using-seurat.html#cb7-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat</span></code></pre></div>
-<pre><code>## An object of class Seurat 
-## 12673 features across 500 samples within 1 assay 
-## Active assay: RNA (12673 features, 0 variable features)</code></pre>
+<div id="dimensional-reduction" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Dimensional reduction</h1>
+<p>The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality
+of this data are used. Here, we will use PCA, a very common techniques for dimension
+reduction and visualization.</p>
+<p>We will run a PCA using the already calculated top 1000 HVGs using the function <code>RunPCA()</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="dimensional-reduction.html#cb17-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(pbmc.seurat, </span>
+<span id="cb17-2"><a href="dimensional-reduction.html#cb17-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">features =</span> <span class="fu">VariableFeatures</span>(pbmc.seurat))</span></code></pre></div>
+<p>We can assess the dimensionality, a measure of the complexity, by using an
+elbow plot of the standard deviation for each principal component (PC)
+from the PCA.</p>
+<p>We will use the function <code>ElbowPlot()</code>.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="dimensional-reduction.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ElbowPlot</span>(pbmc.seurat)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The PC components in a PCA reflects corresponds to the directions in which
+more variability is observed. These PCs are ranked by using the eigenvalues
+of the covariance matrix. We can the plot a Elbow or joystick plot of the
+standard deviation and the rank of each PC. Top ranked PCs are expected to
+have higher values of variability and then to gradually decrease. So, we
+can use the elbow plot representation to keep PCs from the top to the bottom
+until we do not see further variability changes, in these case we can use
+the number of PC equal to 7.</p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="quality-control.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="normalization.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cell-clustering.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
