@@ -7,6 +7,8 @@ documentclass: book
 output:
   bookdown::gitbook: default
   #bookdown::pdf_book: default
+  bookdown::pdf_book:
+    citation_package: biblatex
 ---
 
 
@@ -20,7 +22,8 @@ knitr::opts_chunk$set(
 
 ```
 
-# scRNA-Seq analysis {#intro}
+
+# scRNA-Seq Course Syllabus {#intro}
 
 
 We will use available data from 10X genomics of Peripheral Blood Mononuclear cells (PBMC). In order
@@ -34,6 +37,27 @@ perform the following tasks:
 * Clustering
 * Differential expression
 * Visualization of markers
+
+
+## Single Cell Sequencing
+
+Single cell sequencing (scRNA-Seq) technologies arise from bulk counterparts with 
+the aim of refining gene expression profiles. Previous bulk Sequencing offered 
+averaged quantifications of gene expression in samples. In some contexts, for 
+example, when studying cell type specificity or the heterogeneity in tumours is 
+important to dissect patterns in cell subpopulations.
+
+The following image illustrates the development of scRNA-Seq technologies
+and the number of cells that can be analyzed with each technology. In this 
+course we will not cover this topic, but instead we will take a hands on
+approach and jump directly to the analysis of scRNA-Seq data. However, the 
+analysis that we show next are applied downstream to libraries construction
+and sequencing and are therefore platform agnostic.
+
+
+![**Single Cell Sequencing Platforms**: Date of development *vs* number of cells analyzed by each technology.](figures/moores-law.png)
+
+Image is taken from [Svensson V et al, 2017](https://arxiv.org/abs/1704.01379).
 
 
 ## Quantifying gene expression in single cells
@@ -84,424 +108,4 @@ excel files, tsv, csv, rds, etc. Usually this formats can be converted into each
 methods for such transformation are so different and specific that we cannot covered here.
 
 
-## Standard Preprocessing using Seurat
 
-
-Some standard steps are usually carried out in scRNA-Seq prior to further analysis as QC, dimensional
-reduction and marker visualization. Here, we will use the Seurat R package to perform these steps which
-is increasingly becoming the most popular tool, however, there are some other options as SingleCellExperiment
-in R and scanpy available for python. First, we need to define a Seurat object.
-
-
-## Creating Seurat object
-
-We create a Seurat object using the `CreateSeuratObject` function as follows. Use the `?function` helper
-in R to get information about the parameters that are need to be provided to the function.
-
- * counts - a count matrix. It can be a matrix, sparse matrix or dataframe.
- * project - A single character string. Correspond to a arbitrary name to label the object.
- * assay - A single character string. An arbitrary name that usually is assigned to label the
-            type of sequencing information, for example, RNA, spliced RNA, ATAC, etc...
- * min.cells - An integer. Indicates a threshold of the number of cells for which a feature was
-              recorded. Cells belowe that threshold will be filtered out.
- * min.features - An integer. Similar to min cells but for the number of features of a cell.
- 
-
-```{r, definition_seurat_object}
-library(Seurat)
-
-pbmc.seurat <- CreateSeuratObject(
-  counts = pbmc.mtx, 
-  project = 'PBMC', 
-  assay = 'RNA', 
-  min.cells = 1, 
-  min.features = 1
-)
-```
-
-The variable `pbmc.seurat` now contains the Seurat object that we can feed into the package.
-If we print the variable we get information about the number of genes and cells.
-
-```{r}
-pbmc.seurat
-```
-
-
-## Quality control
-
-
-Filtering cells with low sequencing quality is a very important step since it can greatly
-impact in further analysis. Quality check and control often requires to visualize and inspect
-samples in order to determine appropiate thresholds. Threshold values might vary from one 
-dataset to another, so no hard threshold rule can be applied equally to every case.
-
-We will examine the number of UMI counts, the number of RNA features and the percentage of reads 
-of mitochondrial genes.
-
-We will first calculate the percentage of UMI counts of reads mapped to mitochondrial genes. This
-step most be manually done since is based on a *priori knowledge* of which genes corresponds to
-mitochondrial genes. 
-In this case, genes are annotated using human ensembl gene symbol annotations mitochondrial 
-genes are annotated starting with a `MT-` string.
-
-
-```{r, perc_mito}
-pbmc.seurat[["percent.mt"]] <- PercentageFeatureSet(pbmc.seurat, pattern = "^MT-")
-```
-
-Then, we can visualize the following metrics.
-
- * Number of features - Correspond to the number of different mapped genomic features. For example, in the
- case of scRNA-Seq features corresponds to genes, in ATAC-Seq to genomic ranges, etc. High number of features
- can indicate doublets and empty cells. Usually between 1 and 30000.
- 
- * Number of counts - Number of mapped reads. It can also indicate the presence of doublets and empty 
-droplet. It's generally correlated to the number of features. Usually between 1 and 20000.
- 
- * Percentage of mitochondrial genes - Percentage of mapped reads that are annotated to mitochondrial
- genes. The presence of high levels of % of mitochondrial genes can suggest that a cell have lost
- its membrane integrity, that the cytoplasm has been leaked off and only the mitochondria was retained.
-Usually from 0 to 10.
-
-
-We can plot these metrics using the function `VlnPlot()` as follows:
-
-
-```{r}
-VlnPlot(pbmc.seurat, features = c('nFeature_RNA', 'nCount_RNA', 'percent.mt'))
-```
-
-The violin plots show the values of the metrics for each cell along with an adjusted violin 
-distribution.
-
-
-## Feature selection
-
-
-Because of the sparsity in the sequencing data many genes or features are almost no expressed.
-Additionally, some genes are constantly expressed across cells. These features are then probably
-not playing any function in cells and on the other hand can just add noise and unnecessary complexity
-to further analysis. Then, it's usual to remove genes with very low variability and to select
-only top highly variable genes (HVG).
-
-We will use the function `FindVariableFeatures()` to calculate the top most variable genes.
-The parameter nfeatures is used to set the number of top selected genes. We set to the top
-1000 features.
-
-```{r}
-pbmc.seurat <- FindVariableFeatures(pbmc.seurat, nfeatures = 1000)
-```
-
-
-We can access to the top 1000 variable features using the VariableFeatures function. In the next
-chunk we display the top first 6 (head) of this set. 
-
-
-```{r}
-head(VariableFeatures(pbmc.seurat))
-```
-
-
-In the next scatter plot we can see the average expression *vs* the standardized variance for each feature.
-Genes in red are the selected HVG.
-
-
-```{r}
-# plot variable features with and without labels
-plot1 <- VariableFeaturePlot(pbmc.seurat)
-plot1 <- LabelPoints(plot = plot1, 
-                     points = head(VariableFeatures(pbmc.seurat),
-                                   10), 
-                     repel = TRUE)
-plot1 
-```
-
-For further analysis we will use only HVGs. 
-
-## Normalization
-
-There are several methods for normalization of scRNA-Seq data. A commonly
-used strategy is the log normalization which basically corrects sequencing
-deep in cells by dividing each feature by the total number of counts and
-then multiplied the result by a factor, usually 10000, and finally the
-values are log transformed.
-
-Log normalization can be implemented by using the `NormalizeData()` function.
-
-```{r, normalization}
-pbmc.seurat <- NormalizeData(pbmc.seurat)
-```
-
-Then, in order to make genes measurements more comparable log transformed
-values are scaled in a way that the media is equal to zero and the variance
-is equal to 1 as follows:
-
-```{r, scaling}
-pbmc.seurat <- ScaleData(pbmc.seurat)
-```
-
-
-## Dimensional reduction
-
-
-The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality
-of this data are used. Here, we will use PCA, a very common techniques for dimension
-reduction and visualization.
-
-We will run a PCA using the already calculated top 1000 HVGs using the function `RunPCA()`.
-
-```{r}
-pbmc.seurat <- RunPCA(pbmc.seurat, 
-                      features = VariableFeatures(pbmc.seurat))
-```
-
-We can assess the dimensionality, a measure of the complexity, by using an
-elbow plot of the standard deviation for each principal component (PC)
-from the PCA.
-
-We will use the function `ElbowPlot()`.
-
-```{r}
-ElbowPlot(pbmc.seurat)
-```
-
-The PC components in a PCA reflects corresponds to the directions in which
-more variability is observed. These PCs are ranked by using the eigenvalues
-of the covariance matrix. We can the plot a Elbow or joystick plot of the 
-standard deviation and the rank of each PC. Top ranked PCs are expected to 
-have higher values of variability and then to gradually decrease. So, we
-can use the elbow plot representation to keep PCs from the top to the bottom
-until we do not see further variability changes, in these case we can use 
-the number of PC equal to 7.
-
-
-## Cell clustering
-
-
-Detection of groups or cluster of cells is an important task in scRNA-Seq 
-analysis. Seurat implements a clustering method based in KNN graphs and 
-community detection using the Louvain algorithm. An important parameter
-for clustering is the resolution which can be set to increase/reduce the
-granularity of the clusters.
-
-This method can be implemented by using the functions `FindNeighbors()` and
-`FindClusters()` as follows:
-
-```{r, clustering}
-pbmc.seurat <- FindNeighbors(pbmc.seurat)
-pbmc.seurat <- FindClusters(pbmc.seurat, 
-                            resolution = 0.1, 
-                            verbose = FALSE)
-```
-
-
-The results of the clustering are stored in the Seurat metadata slot, which
-can be accessed as a simple data.frame using the `$` operator. A column vector
-containing each cluster for each cell is name `seurat_cluster` as shown next:
-
-
-```{r}
-head(pbmc.seurat$seurat_clusters)
-```
-
-
-There are 5 different clusters, labeled from 0 to 4 and stored like a factor.
-We can plot a frequency table of the number of cells assigned to each cluster
-by the algorithm.
-
-
-```{r}
-table(pbmc.seurat$seurat_clusters) 
-```
-
-So, 224 cells were assigned to the cluster 0.
-
-
-## Cluster visualization
-
-
-Transformations like PCA, tSNE or UMAP are used to project multidimensional
-data into 2D or 3D representations that can be visualized at the expense
-of the lose of information. tSNE and UMAP transformations aims to preserve
-global relations between sample points. We will use UMAPs to visualize the
-scRNA-Seq data from PBMC.
-
-
-### UMAP
-
-We can use the `RunUMAP` function to calculate the UMAP transformation. The 
-calculation of a UMAP projection can intensive computationally and is 
-usually carried out on already dimensional reduced data using, for example,
-PCA. The RunUMAP from seurat by default will use the PCA reduced data, the
-parameter `dims` sets the number of dimensions, PCs that should be used, as
-we saw we can use 7 PCs which are the ones in which there is more variability.
-
-
-```{r, umap}
-pbmc.seurat <- RunUMAP(pbmc.seurat, 
-                       dims = 1:7, 
-                       verbose = FALSE)
-```
-
-After the calculation of the UMAP we can visualize it using the function
-`DimPlot()`.
-
-
-
-<details>
-<summary>How to improve the clustering?</summary>
-<br>
-Try different higher values for the resolution parameter.
-</details>
-
-
-```{r, umap_plot}
-DimPlot(pbmc.seurat)
-```
-
-
-## Differential Expression Analysis
-
-The main advantage of using scRNA-Seq technologies is the possibility of 
-assessing cell type specificity and heterogeneity, which is not possible while
-using bulk assays. 
-
-We should expect that some of the identified clusters in the UMAP might correspond
-to distinct cell types. The assignation of cell types identities is not always
-straightforward, some clusters might still contain some variability, and 
-additionally, different clusters might correspond to the same cell type at a
-different functional, metabolic or cycling point. 
-
-Cell type profiling is generally done by assessing the expression of markers. 
-This task can be done manually by inspecting markers in dimensional reduced data
-projected in UMAP or tSNE. It can also be done in a automatic manner scoring 
-cells using gene signatures, which are lists of marker genes. Scores are generally
-based in the median expression of all the markers. Using scores has the advantage
-or reducing bias due to the arbitrary selection of markers.
-
-Finding differential expressed markers is important for cluster profiling and
-identification. We will use the `FindAllMarkers()`, this functions performs
-a statistical test comparing the distribution of gene expression values for 
-each gene separately comparing one assigned cell type cluster (in this case 
-the `seurat_clusters` column) *vs* the rest. 
-
-First, we will set up the column used to define the clusters using the 
-function `Idents()`. 
-
-```{r, setting_identities}
-Idents(pbmc.seurat) <- pbmc.seurat$seurat_clusters
-```
-
-Now we can calculate the DEGs. 
-There are several parameters for `FindAllMarkers()`, we will discuss
-`logfc.threshold`, `min.pct` and `min.cells.feature` that corresponds to the threshold of gene
-expression fold change, the minimum percentage of cells expressing the marker 
-and the minimum of cells expressing (counts > 0) the feature. These parameters 
-are used to filter out genes prior calculating DEGs. Lowering the values of these
-parameters will increase the sensibility of the method at the expense of 
-increasing computation time.
-
-
-```{r, dea_calculation}
-pbmc.degs <- FindAllMarkers(pbmc.seurat, 
-                            logfc.threshold = 1, 
-                            min.pct = 0.05, 
-                            min.cells.feature = 10, 
-                            verbose = FALSE)
-```
-
-
-The output `pbmc.degs` consist of a data frame contanning the DEGs with
-p-vales, p-adjusted values and log fold change values for each gene as 
-we can see next:
-
-
-```{r, degs_display}
-head(pbmc.degs)
-```
-
-We can make a vulcano plot using `ggplot`:
-
-```{r, vulcano_plot}
-library(ggplot2)
-library(dplyr)         ## for handling data frames
-library(ggrepel)
-
-pbmc.degs %>%
-  arrange(desc(abs(avg_log2FC))) %>%       ## Arranging genes by FC
-  mutate(rank=1:nrow(pbmc.degs)) %>%        ## Ranking markers by FC
-  mutate(highlight=ifelse(rank<20, TRUE, FALSE)) %>% ## highlighting top FC markers
-  mutate(gene_label=ifelse(highlight==TRUE, gene, '')) %>% ## Adding labels for top markers
-  ggplot(aes(x=avg_log2FC, y=-log10(p_val_adj),
-             colour=highlight,
-             label=gene_label)) +         ## adding labels for top markers
-      geom_point() +
-      geom_text_repel() +
-      theme_bw()
-```
-
-
-## Markers visualization
-
-First, we will take top 10 ranked genes based in Log FC and visualize their
-expression in clusters using a heatmap representation.
-
-```{r, heatmap}
-top10 <- pbmc.degs %>% 
-             group_by(cluster) %>% 
-             top_n(n = 10, wt = avg_log2FC)
-DoHeatmap(pbmc.seurat, features = top10$gene) + NoLegend()
-```
-
-IL-7 is a marker for naive CD4+ T cells, while GZMB is a marker for CD8 T cells.
-Then, we can tentatively consider cluster 0 and 2 as CD4 and CD8 T cells,
-respectively. 
-We can visualize additional known canonical markers in order to assign cell
-categories. 
-
-```{r, umap_markers_vis}
-canonical_markers <- c('IL7R',     ## CD4+ cell
-                       'CCR7',     ## Naive CD4+ T cell
-                       'CD8A',     ## CD8+
-                       'NKG7',     ## NK
-                       'MS4A1',    ## B cell marker
-                       'FCGR3A',   ## Mono
-                       'FCER1A',   ## DC
-                       'CD14'     ## Mono
-                       )
-
-FeaturePlot(pbmc.seurat, features = canonical_markers)
-```
-
-Now, we will annotate the cells with their identified identities in the seurat 
-object. We will map the cluster names as follows:
-
-```{r, cell_type_definition}
-mapping <- data.frame(seurat_cluster=c('0', '1', '2', '3'),
-                      cell_type=c('Lymphocyte', 'B cell', 'Lymphocyte',
-                                  'Monocyte'))
-mapping
-```
-
-To assign the new labels we can use the map function from the plyr R package
-as follows:
-
-
-```{r, mapping}
-pbmc.seurat$'cell_type' <- plyr::mapvalues(
-  x = pbmc.seurat$seurat_clusters,
-  from = mapping$seurat_cluster,
-  to = mapping$cell_type
-)
-```
-
-
-Now, we can plot the clusters with the assigned cell types.
-
-
-```{r, cell_types}
-DimPlot(pbmc.seurat, 
-        group.by = 'cell_type',   ## set the column to use as category
-        label = TRUE)  +          ## label clusters
-        NoLegend()                ## remove legends
-```

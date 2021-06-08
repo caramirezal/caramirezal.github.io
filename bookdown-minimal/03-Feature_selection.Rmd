@@ -1,0 +1,43 @@
+# Feature selection
+
+
+Because of the sparsity in the sequencing data many genes or features are almost no expressed.
+Additionally, some genes are constantly expressed across cells. These features are then probably
+not playing any function in cells and on the other hand can just add noise and unnecessary complexity
+to further analysis. Then, it's usual to remove genes with very low variability and to select
+only top highly variable genes (HVG).
+
+We will use the function `FindVariableFeatures()` to calculate the top most variable genes.
+The parameter nfeatures is used to set the number of top selected genes. We set to the top
+1000 features.
+
+```{r}
+pbmc.seurat <- FindVariableFeatures(pbmc.seurat, nfeatures = 1000)
+```
+
+
+We can access to the top 1000 variable features using the VariableFeatures function. In the next
+chunk we display the top first 6 (head) of this set. 
+
+
+```{r}
+head(VariableFeatures(pbmc.seurat))
+```
+
+
+In the next scatter plot we can see the average expression *vs* the standardized variance for each feature.
+Genes in red are the selected HVG.
+
+
+```{r}
+# plot variable features with and without labels
+plot1 <- VariableFeaturePlot(pbmc.seurat)
+plot1 <- LabelPoints(plot = plot1, 
+                     points = head(VariableFeatures(pbmc.seurat),
+                                   10), 
+                     repel = TRUE)
+plot1 
+```
+
+For further analysis we will use only HVGs. 
+

@@ -1,0 +1,48 @@
+## Quality control
+
+
+Filtering cells with low sequencing quality is a very important step since it can greatly
+impact in further analysis. Quality check and control often requires to visualize and inspect
+samples in order to determine appropiate thresholds. Threshold values might vary from one 
+dataset to another, so no hard threshold rule can be applied equally to every case.
+
+We will examine the number of UMI counts, the number of RNA features and the percentage of reads 
+of mitochondrial genes.
+
+We will first calculate the percentage of UMI counts of reads mapped to mitochondrial genes. This
+step most be manually done since is based on a *priori knowledge* of which genes corresponds to
+mitochondrial genes. 
+In this case, genes are annotated using human ensembl gene symbol annotations mitochondrial 
+genes are annotated starting with a `MT-` string.
+
+
+```{r, perc_mito}
+pbmc.seurat[["percent.mt"]] <- PercentageFeatureSet(pbmc.seurat, pattern = "^MT-")
+```
+
+Then, we can visualize the following metrics.
+
+ * Number of features - Correspond to the number of different mapped genomic features. For example, in the
+ case of scRNA-Seq features corresponds to genes, in ATAC-Seq to genomic ranges, etc. High number of features
+ can indicate doublets and empty cells. Usually between 1 and 30000.
+ 
+ * Number of counts - Number of mapped reads. It can also indicate the presence of doublets and empty 
+droplet. It's generally correlated to the number of features. Usually between 1 and 20000.
+ 
+ * Percentage of mitochondrial genes - Percentage of mapped reads that are annotated to mitochondrial
+ genes. The presence of high levels of % of mitochondrial genes can suggest that a cell have lost
+ its membrane integrity, that the cytoplasm has been leaked off and only the mitochondria was retained.
+Usually from 0 to 10.
+
+
+We can plot these metrics using the function `VlnPlot()` as follows:
+
+
+```{r}
+VlnPlot(pbmc.seurat, features = c('nFeature_RNA', 'nCount_RNA', 'percent.mt'))
+```
+
+The violin plots show the values of the metrics for each cell along with an adjusted violin 
+distribution.
+
+

@@ -1,0 +1,57 @@
+# Normalization
+
+There are several methods for normalization of scRNA-Seq data. A commonly
+used strategy is the log normalization which basically corrects sequencing
+deep in cells by dividing each feature by the total number of counts and
+then multiplied the result by a factor, usually 10000, and finally the
+values are log transformed.
+
+Log normalization can be implemented by using the `NormalizeData()` function.
+
+```{r, normalization}
+pbmc.seurat <- NormalizeData(pbmc.seurat)
+```
+
+Then, in order to make genes measurements more comparable log transformed
+values are scaled in a way that the media is equal to zero and the variance
+is equal to 1 as follows:
+
+```{r, scaling}
+pbmc.seurat <- ScaleData(pbmc.seurat)
+```
+
+
+# Dimensional reduction
+
+
+The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality
+of this data are used. Here, we will use PCA, a very common techniques for dimension
+reduction and visualization.
+
+We will run a PCA using the already calculated top 1000 HVGs using the function `RunPCA()`.
+
+```{r}
+pbmc.seurat <- RunPCA(pbmc.seurat, 
+                      features = VariableFeatures(pbmc.seurat))
+```
+
+We can assess the dimensionality, a measure of the complexity, by using an
+elbow plot of the standard deviation for each principal component (PC)
+from the PCA.
+
+We will use the function `ElbowPlot()`.
+
+```{r}
+ElbowPlot(pbmc.seurat)
+```
+
+The PC components in a PCA reflects corresponds to the directions in which
+more variability is observed. These PCs are ranked by using the eigenvalues
+of the covariance matrix. We can the plot a Elbow or joystick plot of the 
+standard deviation and the rank of each PC. Top ranked PCs are expected to 
+have higher values of variability and then to gradually decrease. So, we
+can use the elbow plot representation to keep PCs from the top to the bottom
+until we do not see further variability changes, in these case we can use 
+the number of PC equal to 7.
+
+
