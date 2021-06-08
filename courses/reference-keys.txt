@@ -5,6 +5,7 @@ standard-preprocessing-using-seurat
 creating-seurat-object
 quality-control
 feature-selection
+dimensionional-reduction
 normalization
 dimensional-reduction
 cell-clustering

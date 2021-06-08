@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>7 Cluster visualization | IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="7 Cluster visualization | IRTG COURSE: INTRODUCTION TO R" />
+  <title>5 Dimensionional Reduction | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="5 Dimensionional Reduction | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="7 Cluster visualization | IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="5 Dimensionional Reduction | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="7 Cluster visualization | IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="5 Dimensionional Reduction | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="cell-clustering.html"/>
-<link rel="next" href="differential-expression-analysis.html"/>
+<link rel="prev" href="feature-selection.html"/>
+<link rel="next" href="cell-clustering.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -172,35 +172,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="cluster-visualization" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Cluster visualization</h1>
-<p>Transformations like PCA, tSNE or UMAP are used to project multidimensional
-data into 2D or 3D representations that can be visualized at the expense
-of the lose of information. tSNE and UMAP transformations aims to preserve
-global relations between sample points. We will use UMAPs to visualize the
-scRNA-Seq data from PBMC.</p>
-<div id="umap" class="section level2" number="7.1">
-<h2><span class="header-section-number">7.1</span> UMAP</h2>
-<p>We can use the <code>RunUMAP</code> function to calculate the UMAP transformation. The
-calculation of a UMAP projection can intensive computationally and is
-usually carried out on already dimensional reduced data using, for example,
-PCA. The RunUMAP from seurat by default will use the PCA reduced data, the
-parameter <code>dims</code> sets the number of dimensions, PCs that should be used, as
-we saw we can use 7 PCs which are the ones in which there is more variability.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="cluster-visualization.html#cb24-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(pbmc.seurat, </span>
-<span id="cb24-2"><a href="cluster-visualization.html#cb24-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>, </span>
-<span id="cb24-3"><a href="cluster-visualization.html#cb24-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>After the calculation of the UMAP we can visualize it using the function
-<code>DimPlot()</code>.</p>
-<details>
-<summary>
-How to improve the clustering?
-</summary>
-<br>
-Try different higher values for the resolution parameter.
-</details>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="cluster-visualization.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(pbmc.seurat)</span></code></pre></div>
-<p><img src="course_files/figure-html/umap_plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="dimensionional-reduction" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Dimensionional Reduction</h1>
+<div id="normalization" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Normalization</h2>
+<p>There are several methods for normalization of scRNA-Seq data. A commonly
+used strategy is the log normalization which basically corrects sequencing
+deep in cells by dividing each feature by the total number of counts and
+then multiplied the result by a factor, usually 10000, and finally the
+values are log transformed.</p>
+<p>Log normalization can be implemented by using the <code>NormalizeData()</code> function.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="dimensionional-reduction.html#cb15-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">NormalizeData</span>(pbmc.seurat)</span></code></pre></div>
+<p>Then, in order to make genes measurements more comparable log transformed
+values are scaled in a way that the media is equal to zero and the variance
+is equal to 1 as follows:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="dimensionional-reduction.html#cb16-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">ScaleData</span>(pbmc.seurat)</span></code></pre></div>
+</div>
+<div id="dimensional-reduction" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Dimensional reduction</h2>
+<p>The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality
+of this data are used. Here, we will use PCA, a very common techniques for dimension
+reduction and visualization.</p>
+<p>We will run a PCA using the already calculated top 1000 HVGs using the function <code>RunPCA()</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="dimensionional-reduction.html#cb17-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(pbmc.seurat, </span>
+<span id="cb17-2"><a href="dimensionional-reduction.html#cb17-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">features =</span> <span class="fu">VariableFeatures</span>(pbmc.seurat))</span></code></pre></div>
+<p>We can assess the dimensionality, a measure of the complexity, by using an
+elbow plot of the standard deviation for each principal component (PC)
+from the PCA.</p>
+<p>We will use the function <code>ElbowPlot()</code>.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="dimensionional-reduction.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ElbowPlot</span>(pbmc.seurat)</span></code></pre></div>
+<p><img src="course_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The PC components in a PCA reflects corresponds to the directions in which
+more variability is observed. These PCs are ranked by using the eigenvalues
+of the covariance matrix. We can the plot a Elbow or joystick plot of the
+standard deviation and the rank of each PC. Top ranked PCs are expected to
+have higher values of variability and then to gradually decrease. So, we
+can use the elbow plot representation to keep PCs from the top to the bottom
+until we do not see further variability changes, in these case we can use
+the number of PC equal to 7.</p>
 
 </div>
 </div>
@@ -209,8 +218,8 @@ Try different higher values for the resolution parameter.
           </div>
         </div>
       </div>
-<a href="cell-clustering.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="differential-expression-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="feature-selection.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cell-clustering.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

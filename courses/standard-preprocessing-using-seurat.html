@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="feature-selection.html"/>
+<link rel="next" href="quality-control.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -140,11 +140,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html"><i class="fa fa-check"></i><b>2</b> Standard Preprocessing using Seurat</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#creating-seurat-object"><i class="fa fa-check"></i><b>2.1</b> Creating Seurat object</a></li>
-<li class="chapter" data-level="2.2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#quality-control"><i class="fa fa-check"></i><b>2.2</b> Quality control</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>3</b> Feature selection</a></li>
-<li class="chapter" data-level="4" data-path="normalization.html"><a href="normalization.html"><i class="fa fa-check"></i><b>4</b> Normalization</a></li>
-<li class="chapter" data-level="5" data-path="dimensional-reduction.html"><a href="dimensional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensional reduction</a></li>
+<li class="chapter" data-level="3" data-path="quality-control.html"><a href="quality-control.html"><i class="fa fa-check"></i><b>3</b> Quality control</a></li>
+<li class="chapter" data-level="4" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>4</b> Feature selection</a></li>
+<li class="chapter" data-level="5" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensionional Reduction</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#normalization"><i class="fa fa-check"></i><b>5.1</b> Normalization</a></li>
+<li class="chapter" data-level="5.2" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#dimensional-reduction"><i class="fa fa-check"></i><b>5.2</b> Dimensional reduction</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="cell-clustering.html"><a href="cell-clustering.html"><i class="fa fa-check"></i><b>6</b> Cell clustering</a></li>
 <li class="chapter" data-level="7" data-path="cluster-visualization.html"><a href="cluster-visualization.html"><i class="fa fa-check"></i><b>7</b> Cluster visualization</a>
 <ul>
@@ -205,39 +208,6 @@ If we print the variable we get information about the number of genes and cells.
 ## Active assay: RNA (12673 features, 0 variable features)</code></pre>
 
 </div>
-<div id="quality-control" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Quality control</h2>
-<p>Filtering cells with low sequencing quality is a very important step since it can greatly
-impact in further analysis. Quality check and control often requires to visualize and inspect
-samples in order to determine appropiate thresholds. Threshold values might vary from one
-dataset to another, so no hard threshold rule can be applied equally to every case.</p>
-<p>We will examine the number of UMI counts, the number of RNA features and the percentage of reads
-of mitochondrial genes.</p>
-<p>We will first calculate the percentage of UMI counts of reads mapped to mitochondrial genes. This
-step most be manually done since is based on a <em>priori knowledge</em> of which genes corresponds to
-mitochondrial genes.
-In this case, genes are annotated using human ensembl gene symbol annotations mitochondrial
-genes are annotated starting with a <code>MT-</code> string.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="standard-preprocessing-using-seurat.html#cb9-1" aria-hidden="true" tabindex="-1"></a>pbmc.seurat[[<span class="st">&quot;percent.mt&quot;</span>]] <span class="ot">&lt;-</span> <span class="fu">PercentageFeatureSet</span>(pbmc.seurat, <span class="at">pattern =</span> <span class="st">&quot;^MT-&quot;</span>)</span></code></pre></div>
-<p>Then, we can visualize the following metrics.</p>
-<ul>
-<li><p>Number of features - Correspond to the number of different mapped genomic features. For example, in the
-case of scRNA-Seq features corresponds to genes, in ATAC-Seq to genomic ranges, etc. High number of features
-can indicate doublets and empty cells. Usually between 1 and 30000.</p></li>
-<li><p>Number of counts - Number of mapped reads. It can also indicate the presence of doublets and empty
-droplet. It’s generally correlated to the number of features. Usually between 1 and 20000.</p></li>
-<li><p>Percentage of mitochondrial genes - Percentage of mapped reads that are annotated to mitochondrial
-genes. The presence of high levels of % of mitochondrial genes can suggest that a cell have lost
-its membrane integrity, that the cytoplasm has been leaked off and only the mitochondria was retained.
-Usually from 0 to 10.</p></li>
-</ul>
-<p>We can plot these metrics using the function <code>VlnPlot()</code> as follows:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="standard-preprocessing-using-seurat.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VlnPlot</span>(pbmc.seurat, <span class="at">features =</span> <span class="fu">c</span>(<span class="st">&#39;nFeature_RNA&#39;</span>, <span class="st">&#39;nCount_RNA&#39;</span>, <span class="st">&#39;percent.mt&#39;</span>))</span></code></pre></div>
-<p><img src="course_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>The violin plots show the values of the metrics for each cell along with an adjusted violin
-distribution.</p>
-
-</div>
 </div>
             </section>
 
@@ -245,7 +215,7 @@ distribution.</p>
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="feature-selection.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="quality-control.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

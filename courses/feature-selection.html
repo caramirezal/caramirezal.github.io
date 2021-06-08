@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>3 Feature selection | IRTG COURSE: INTRODUCTION TO R</title>
-  <meta name="description" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
+  <title>4 Feature selection | IRTG COURSE: INTRODUCTION TO R</title>
+  <meta name="description" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
+  <meta property="og:title" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="3 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
+  <meta name="twitter:title" content="4 Feature selection | IRTG COURSE: INTRODUCTION TO R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="standard-preprocessing-using-seurat.html"/>
-<link rel="next" href="normalization.html"/>
+<link rel="prev" href="quality-control.html"/>
+<link rel="next" href="dimensionional-reduction.html"/>
 <script src="libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -140,11 +140,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html"><i class="fa fa-check"></i><b>2</b> Standard Preprocessing using Seurat</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#creating-seurat-object"><i class="fa fa-check"></i><b>2.1</b> Creating Seurat object</a></li>
-<li class="chapter" data-level="2.2" data-path="standard-preprocessing-using-seurat.html"><a href="standard-preprocessing-using-seurat.html#quality-control"><i class="fa fa-check"></i><b>2.2</b> Quality control</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>3</b> Feature selection</a></li>
-<li class="chapter" data-level="4" data-path="normalization.html"><a href="normalization.html"><i class="fa fa-check"></i><b>4</b> Normalization</a></li>
-<li class="chapter" data-level="5" data-path="dimensional-reduction.html"><a href="dimensional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensional reduction</a></li>
+<li class="chapter" data-level="3" data-path="quality-control.html"><a href="quality-control.html"><i class="fa fa-check"></i><b>3</b> Quality control</a></li>
+<li class="chapter" data-level="4" data-path="feature-selection.html"><a href="feature-selection.html"><i class="fa fa-check"></i><b>4</b> Feature selection</a></li>
+<li class="chapter" data-level="5" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html"><i class="fa fa-check"></i><b>5</b> Dimensionional Reduction</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#normalization"><i class="fa fa-check"></i><b>5.1</b> Normalization</a></li>
+<li class="chapter" data-level="5.2" data-path="dimensionional-reduction.html"><a href="dimensionional-reduction.html#dimensional-reduction"><i class="fa fa-check"></i><b>5.2</b> Dimensional reduction</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="cell-clustering.html"><a href="cell-clustering.html"><i class="fa fa-check"></i><b>6</b> Cell clustering</a></li>
 <li class="chapter" data-level="7" data-path="cluster-visualization.html"><a href="cluster-visualization.html"><i class="fa fa-check"></i><b>7</b> Cluster visualization</a>
 <ul>
@@ -169,8 +172,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="feature-selection" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Feature selection</h1>
+<div id="feature-selection" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Feature selection</h1>
 <p>Because of the sparsity in the sequencing data many genes or features are almost no expressed.
 Additionally, some genes are constantly expressed across cells. These features are then probably
 not playing any function in cells and on the other hand can just add noise and unnecessary complexity
@@ -202,8 +205,8 @@ Genes in red are the selected HVG.</p>
           </div>
         </div>
       </div>
-<a href="standard-preprocessing-using-seurat.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="normalization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="quality-control.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="dimensionional-reduction.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
