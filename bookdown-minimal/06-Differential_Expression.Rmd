@@ -18,16 +18,16 @@ based in the median expression of all the markers. Using scores has the advantag
 or reducing bias due to the arbitrary selection of markers.
 
 Finding differential expressed markers is important for cluster profiling and
-identification. We will use the `FindAllMarkers()`, this functions performs
+identification. We will use the `FindAllMarkers()` function, which performs
 a statistical test comparing the distribution of gene expression values for 
 each gene separately comparing one assigned cell type cluster (in this case 
-the `seurat_clusters` column) *vs* the rest. 
+the `seurat_clusters` column) *vs* the rest of cells. 
 
 First, we will set up the column used to define the clusters using the 
 function `Idents()`. 
 
 ```{r, setting_identities}
-Idents(pbmc.seurat) <- pbmc.seurat$seurat_clusters
+Idents(pbmc.filtered) <- pbmc.filtered$seurat_clusters
 ```
 
 Now we can calculate the DEGs. 
@@ -41,7 +41,7 @@ increasing computation time.
 
 
 ```{r, dea_calculation}
-pbmc.degs <- FindAllMarkers(pbmc.seurat, 
+pbmc.degs <- FindAllMarkers(pbmc.filtered, 
                             logfc.threshold = 1, 
                             min.pct = 0.05, 
                             min.cells.feature = 10, 
@@ -56,6 +56,13 @@ we can see next:
 
 ```{r, degs_display}
 head(pbmc.degs)
+```
+
+```{r include=FALSE}
+write.table(pbmc.degs, 
+            file = 'data/degs_10x_pbmc.tsv', 
+            sep = '\t')
+degs.pbmc <- read.table('data/degs_10x_pbmc.tsv')
 ```
 
 We can make a vulcano plot using `ggplot`:
@@ -78,4 +85,18 @@ pbmc.degs %>%
       theme_bw()
 ```
 
+
+## Exercises
+
+> Compare the DEGs from the above shown results with that calculated using the 10X PBMC 250 cells downsample data clusters in the previous exercises
+
+
+ * Load the tsv file containing the calculated DEGs from above using the following
+url:
+`https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/degs_10x_pbmc.tsv`
+
+ * Calculate the DEGs using the downsampled 10X PBMC 250 cells data with the clusters
+ obtained using your parameters
+ 
+ * Intersect both lists of genes 
 

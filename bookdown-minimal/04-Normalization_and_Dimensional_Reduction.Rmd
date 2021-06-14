@@ -1,4 +1,4 @@
-# Dimensionional Reduction
+# Dimensional Reduction
 
 
 ## Normalization
@@ -12,7 +12,7 @@ values are log transformed.
 Log normalization can be implemented by using the `NormalizeData()` function.
 
 ```{r, normalization}
-pbmc.seurat <- NormalizeData(pbmc.seurat)
+pbmc.filtered <- NormalizeData(pbmc.filtered)
 ```
 
 Then, in order to make genes measurements more comparable log transformed
@@ -20,7 +20,7 @@ values are scaled in a way that the media is equal to zero and the variance
 is equal to 1 as follows:
 
 ```{r, scaling}
-pbmc.seurat <- ScaleData(pbmc.seurat)
+pbmc.filtered <- ScaleData(pbmc.filtered)
 ```
 
 
@@ -35,8 +35,8 @@ reduction and visualization.
 We will run a PCA using the already calculated top 1000 HVGs using the function `RunPCA()`.
 
 ```{r}
-pbmc.seurat <- RunPCA(pbmc.seurat, 
-                      features = VariableFeatures(pbmc.seurat))
+pbmc.filtered <- RunPCA(pbmc.filtered, 
+                      features = VariableFeatures(pbmc.filtered))
 ```
 
 We can assess the dimensionality, a measure of the complexity, by using an
@@ -45,8 +45,9 @@ from the PCA.
 
 We will use the function `ElbowPlot()`.
 
+
 ```{r}
-ElbowPlot(pbmc.seurat)
+ElbowPlot(pbmc.filtered)
 ```
 
 The PC components in a PCA reflects corresponds to the directions in which
@@ -57,5 +58,24 @@ have higher values of variability and then to gradually decrease. So, we
 can use the elbow plot representation to keep PCs from the top to the bottom
 until we do not see further variability changes, in these case we can use 
 the number of PC equal to 7.
+
+
+## Exercises
+
+> Manipulation of PCA embedded projection
+
+ * Extract PCA embedding matrix
+ * Make a PCA plot showing the first 2 principal components 
+ 
+
+```{r, include=FALSE}
+## First method
+pca <- Embeddings(pbmc.filtered, reduction = 'pca')
+
+## Second method
+pca <- pbmc.filtered@reductions$pca@cell.embeddings[1:5, 1:5]
+
+plot(pca[, 1:2])
+```
 
 

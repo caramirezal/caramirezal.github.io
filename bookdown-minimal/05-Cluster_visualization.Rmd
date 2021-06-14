@@ -11,8 +11,8 @@ This method can be implemented by using the functions `FindNeighbors()` and
 `FindClusters()` as follows:
 
 ```{r, clustering}
-pbmc.seurat <- FindNeighbors(pbmc.seurat)
-pbmc.seurat <- FindClusters(pbmc.seurat, 
+pbmc.filtered <- FindNeighbors(pbmc.filtered)
+pbmc.filtered <- FindClusters(pbmc.filtered, 
                             resolution = 0.1, 
                             verbose = FALSE)
 ```
@@ -24,7 +24,7 @@ containing each cluster for each cell is name `seurat_cluster` as shown next:
 
 
 ```{r}
-head(pbmc.seurat$seurat_clusters)
+head(pbmc.filtered$seurat_clusters)
 ```
 
 
@@ -34,10 +34,19 @@ by the algorithm.
 
 
 ```{r}
-table(pbmc.seurat$seurat_clusters) 
+table(pbmc.filtered$seurat_clusters) 
 ```
 
-So, 224 cells were assigned to the cluster 0.
+So, 297 cells were assigned to the cluster 0.
+
+## Exercises
+
+> Testing clustering 
+
+ * Try different different parameters for the clustering. For example,
+`k.param` in the *FindNeighbors()* function and higher levels of
+resolution.
+
 
 
 # Cluster visualization
@@ -61,7 +70,7 @@ we saw we can use 7 PCs which are the ones in which there is more variability.
 
 
 ```{r, umap}
-pbmc.seurat <- RunUMAP(pbmc.seurat, 
+pbmc.filtered <- RunUMAP(pbmc.filtered, 
                        dims = 1:7, 
                        verbose = FALSE)
 ```
@@ -70,16 +79,15 @@ After the calculation of the UMAP we can visualize it using the function
 `DimPlot()`.
 
 
-
-<details>
-<summary>How to improve the clustering?</summary>
-<br>
-Try different higher values for the resolution parameter.
-</details>
-
-
 ```{r, umap_plot}
-DimPlot(pbmc.seurat)
+DimPlot(pbmc.filtered)
 ```
 
 
+## Exercise
+
+
+> Perform UMAP visualization with the 10x PBMC 250 cells with your own set
+of parameters
+
+* How does subsampling and parameters selection affects clustering?

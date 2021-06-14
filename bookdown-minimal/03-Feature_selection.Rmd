@@ -1,3 +1,8 @@
+---
+output: 
+  html_document: 
+    keep_md: yes
+---
 # Feature selection
 
 
@@ -12,7 +17,7 @@ The parameter nfeatures is used to set the number of top selected genes. We set 
 1000 features.
 
 ```{r}
-pbmc.seurat <- FindVariableFeatures(pbmc.seurat, nfeatures = 1000)
+pbmc.filtered <- FindVariableFeatures(pbmc.filtered, nfeatures = 1000)
 ```
 
 
@@ -21,7 +26,7 @@ chunk we display the top first 6 (head) of this set.
 
 
 ```{r}
-head(VariableFeatures(pbmc.seurat))
+head(VariableFeatures(pbmc.filtered))
 ```
 
 
@@ -31,9 +36,9 @@ Genes in red are the selected HVG.
 
 ```{r}
 # plot variable features with and without labels
-plot1 <- VariableFeaturePlot(pbmc.seurat)
+plot1 <- VariableFeaturePlot(pbmc.filtered)
 plot1 <- LabelPoints(plot = plot1, 
-                     points = head(VariableFeatures(pbmc.seurat),
+                     points = head(VariableFeatures(pbmc.filtered),
                                    10), 
                      repel = TRUE)
 plot1 
@@ -41,3 +46,24 @@ plot1
 
 For further analysis we will use only HVGs. 
 
+## Exercises
+
+> Extract normalized expression values and calculate the variance in genes and order them
+by variance.
+
+* Extract the matrix of gene expression normalized values from the Seurat object
+* Calculate variances manually from the matrix
+* Sort genes based on variances in decreasing order and show top 6 genes
+
+
+```{r, include=FALSE}
+## Extracting normalized values
+norm.exp <- FetchData(pbmc.filtered, 
+                      vars=rownames(pbmc.filtered))
+
+## Calculation of the variance in genes
+std.devs <- apply(norm.exp, 2, var)
+
+## Showing the top 6 genes with highest variance
+head(sort(std.devs, decreasing = T))
+```
