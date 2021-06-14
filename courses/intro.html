@@ -58,7 +58,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -132,11 +131,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path=""><a href="#intro"><i class="fa fa-check"></i><b>1</b> scRNA-Seq Course Syllabus</a>
-<ul>
-<li class="chapter" data-level="1.1" data-path=""><a href="#single-cell-sequencing"><i class="fa fa-check"></i><b>1.1</b> Single Cell Sequencing</a></li>
-<li class="chapter" data-level="1.2" data-path=""><a href="#quantifying-gene-expression-in-single-cells"><i class="fa fa-check"></i><b>1.2</b> Quantifying gene expression in single cells</a></li>
-</ul></li>
+<li class="chapter" data-level="0.1" data-path="01-Introduction.html"><a href="#description"><i class="fa fa-check"></i><b>0.1</b> Course description</a></li>
+<li class="chapter" data-level="1" data-path="01-Introduction.html"><a href="#intro"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 </ul>
 
       </nav>
@@ -157,83 +153,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">IRTG COURSE: INTRODUCTION TO R</h1>
 <p class="author"><em>Carl Herrmann &amp; Carlos Ramirez</em></p>
-<p class="date" style="margin-top: 1.5em;"><em>08 June, 2021</em></p>
+<p class="date" style="margin-top: 1.5em;"><em>12 May, 2021</em></p>
 </div>
 <div id="intro" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> scRNA-Seq Course Syllabus</h1>
-<p>We will use available data from 10X genomics of Peripheral Blood Mononuclear cells (PBMC). In order
-to speed up the process only a subset of 500 cells are going to be processed here. Here, we will
-perform the following tasks:</p>
-<ul>
-<li>Definition of a Seurat object from a matrix of counts</li>
-<li>Quality Control (QC) of the cell samples</li>
-<li>Filtering</li>
-<li>Dimensional reduction</li>
-<li>Clustering</li>
-<li>Differential expression</li>
-<li>Visualization of markers</li>
-</ul>
-<div id="single-cell-sequencing" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Single Cell Sequencing</h2>
-<p>Single cell sequencing (scRNA-Seq) technologies arise from bulk counterparts with
-the aim of refining gene expression profiles. Previous bulk Sequencing offered
-averaged quantifications of gene expression in samples. In some contexts, for
-example, when studying cell type specificity or the heterogeneity in tumours is
-important to dissect patterns in cell subpopulations.</p>
-<p>The following image illustrates the development of scRNA-Seq technologies
-and the number of cells that can be analyzed with each technology. In this
-course we will not cover this topic, but instead we will take a hands on
-approach and jump directly to the analysis of scRNA-Seq data. However, the
-analysis that we show next are applied downstream to libraries construction
-and sequencing and are therefore platform agnostic.</p>
-<div class="figure">
-<img src="figures/moores-law.png" alt="" />
-<p class="caption"><strong>Single Cell Sequencing Platforms</strong>: Date of development <em>vs</em> number of cells analyzed by each technology.</p>
-</div>
-<p>Image is taken from <a href="https://arxiv.org/abs/1704.01379">Svensson V et al, 2017</a>.</p>
-</div>
-<div id="quantifying-gene-expression-in-single-cells" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Quantifying gene expression in single cells</h2>
-<p>Genes are expressed in cells by the synthesis of mRNA molecules. Quantification of gene expression
-in single cells consists of counting and mapping sequenced reads to each gene in each cell. The
-outcome of this process is a count matrix, which is a discrete matrix of integers corresponding
-to the number of RNA molecules associated to each gene and cell. The count matrix usually has
-genes as rows and cells in columns.</p>
-<p>In the next lines we will load the matrix of UMI counts into a variable called <code>pbmc.mtx</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Dependencies</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmarkdown)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">333</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading example data</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pbmc_url  <span class="ot">&lt;-</span> <span class="st">&#39;https://github.com/caramirezal/caramirezal.github.io/raw/master/bookdown-minimal/data/pbmc_10X_500_cells.mtx.rds&#39;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>pbmc.mtx <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">url</span>(pbmc_url))</span></code></pre></div>
-<p>As can be seen from the output of the function <code>dim(pbmc.mtx)</code> the matrix contains rows (genes) and 500 columns (cells).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(pbmc.mtx)</span></code></pre></div>
-<pre><code>## [1] 13714   500</code></pre>
-<p>To have a glimpse of the appearance of this matrix we print the first 5 rows and first 5 columns. It can
-be seen that the matrix object is a particular array called sparse Matrix. These types of matrices are
-specially efficient to store numerical arrays which are very sparse (full of zeroes) as is the case
-for single cell count matrices data.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pbmc.mtx[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
-<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
-##               AAAGAGACGGACTT-1 AAAGATCTGGGCAA-1 AAAGCAGATATCGG-1
-## AL627309.1                   .                .                .
-## AP006222.2                   .                .                .
-## RP11-206L10.2                .                .                .
-## RP11-206L10.9                .                .                .
-## LINC00115                    .                .                .
-##               AAAGTTTGATCACG-1 AAATCAACCCTATT-1
-## AL627309.1                   .                .
-## AP006222.2                   .                .
-## RP11-206L10.2                .                .
-## RP11-206L10.9                .                .
-## LINC00115                    .                .</code></pre>
-<p>We can start from different types of arrays apart from sparse matrices as data frames or hd5
-objects just to give some examples. The format in which the matrix is provided might also vary from
-excel files, tsv, csv, rds, etc. Usually this formats can be converted into each other, however, the
-methods for such transformation are so different and specific that we cannot covered here.</p>
-</div>
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>We will use available data from 10X genomics of Peripheral Blood Mononuclear cells. In order to speed up
+the process only a subset of cell are going to be processed here.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">333</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#pbmc_url &lt;- &#39;https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz&#39;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#dir.create(&#39;data&#39;)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#download.file(pbmc_url, </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#              destfile = &#39;data/pbmc3k_filtered_gene_bc_matrices.tar.gz&#39;)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#untar(&#39;data/pbmc3k_filtered_gene_bc_matrices.tar.gz&#39;, exdir = &#39;data/&#39;)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the PBMC dataset</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#pbmc.data &lt;- Read10X(data.dir = &quot;data/filtered_gene_bc_matrices/hg19/&quot;)</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize the Seurat object with the raw (non-normalized data).</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = &quot;pbmc3k&quot;, min.cells = 3, min.features = 200)</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#pbmc &lt;- subset(pbmc, downsample=500)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#pbmc</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(pbmc, <span class="at">file =</span> <span class="st">&#39;data/pbmc_10X_500_cells.rds&#39;</span>, <span class="at">compress =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>pbmc <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&#39;data/pbmc_10X_500_cells.rds&#39;</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pbmc</span></code></pre></div>
+<pre><code>## An object of class Seurat 
+## 13714 features across 500 samples within 1 assay 
+## Active assay: RNA (13714 features, 0 variable features)</code></pre>
+
 </div>
             </section>
 
@@ -287,8 +237,7 @@ gitbook.start({
 "download": null,
 "toc": {
 "collapse": "subsection"
-},
-"search": false
+}
 });
 });
 </script>
