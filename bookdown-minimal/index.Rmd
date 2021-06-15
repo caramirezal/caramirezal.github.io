@@ -1,15 +1,7 @@
 ---
-title: "IRTG COURSE: INTRODUCTION TO R"
-author: "Carl Herrmann & Carlos Ramirez"
-site: bookdown::bookdown_site
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-documentclass: book
 output:
-  keep_md: true
-  bookdown::pdf_book:
-    citation_package: biblatex
-  bookdown::gitbook: default
-  #bookdown::pdf_book: default
+  html_document:
+    keep_md: yes
 ---
 
 
