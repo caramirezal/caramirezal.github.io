@@ -257,6 +257,18 @@ mapping</code></pre>
 <blockquote>
 <p>Provide a report of all your findings (QC, clustering) including plots, parameter selection and conclusions using the 10x PBMC 250 subsampled data.</p>
 </blockquote>
+<blockquote>
+<p>Using the scRNA-Seq workflow that we have seen analize a dataset of PBMC cells stimulated with IFN beta.</p>
+</blockquote>
+<ul>
+<li>Load the seurat object containing the data to a variable named <code>ifnb</code> using the following commands:</li>
+</ul>
+<pre><code>url_ifn &lt;- &#39;https://github.com/caramirezal/caramirezal.github.io/blob/master/bookdown-minimal/data/pbmc_ifnb_stimulated.seu.rds?raw=true&#39;
+ifnb &lt;- readRDS(url(url_ifn))</code></pre>
+<ul>
+<li>This data is downsampled from the <a href="https://www.nature.com/articles/nbt.4042">Kang HM et al, 2017 data</a>.</li>
+<li>Provide a report in a Rmd file.</li>
+</ul>
 </div>
 </div>
 
