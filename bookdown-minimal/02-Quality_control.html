@@ -240,6 +240,14 @@ We observe as expected a linear relation between the number of UMI counts and th
 <li>Filter out cells based on the calculated values</li>
 </ul>
 </div>
+<div id="normalization" class="section level2">
+<h2>Normalization</h2>
+<p>There are several methods for normalization of scRNA-Seq data. A commonly used strategy is the log normalization which basically corrects sequencing deep in cells by dividing each feature by the total number of counts and then multiplied the result by a factor, usually 10000, and finally the values are log transformed.</p>
+<p>Log normalization can be implemented by using the <code>NormalizeData()</code> function.</p>
+<pre class="r"><code>pbmc.filtered &lt;- NormalizeData(pbmc.filtered)</code></pre>
+<p>Then, in order to make genes measurements more comparable log transformed values are scaled in a way that the media is equal to zero and the variance is equal to 1 as follows:</p>
+<pre class="r"><code>pbmc.filtered &lt;- ScaleData(pbmc.filtered)</code></pre>
+</div>
 </div>
 
 

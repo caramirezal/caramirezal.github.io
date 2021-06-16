@@ -20,32 +20,6 @@ source('course_script.R')
 # Dimensional Reduction
 
 
-## Normalization
-
-There are several methods for normalization of scRNA-Seq data. A commonly
-used strategy is the log normalization which basically corrects sequencing
-deep in cells by dividing each feature by the total number of counts and
-then multiplied the result by a factor, usually 10000, and finally the
-values are log transformed.
-
-Log normalization can be implemented by using the `NormalizeData()` function.
-
-```{r, normalization}
-pbmc.filtered <- NormalizeData(pbmc.filtered)
-```
-
-Then, in order to make genes measurements more comparable log transformed
-values are scaled in a way that the media is equal to zero and the variance
-is equal to 1 as follows:
-
-```{r, scaling}
-pbmc.filtered <- ScaleData(pbmc.filtered)
-```
-
-
-
-## Dimensional reduction
-
 
 The size of scRNA-Seq matrices can be huge and for this reason techniques to reduce the dimensionality
 of this data are used. Here, we will use PCA, a very common techniques for dimension
