@@ -138,13 +138,15 @@ write.table(exercise.seu@assays$RNA@counts,
             file = 'data/pbmc_10X_250_cells.tsv',
             sep = '\t')
 
+```
+
+
+```{r}
 examp.matrix <- read.table('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.tsv',
                            sep = '\t')
 
-#examp.matrix <- read.table('data/pbmc_10X_250_cells.tsv',
-#                           sep = '\t')
-examp.matrix %>% dim
-examp.matrix[1:5, 1:5]
+#examp.matrix %>% dim
+#examp.matrix[1:5, 1:5]
 
 example.seurat <- CreateSeuratObject(
   counts = examp.matrix, 

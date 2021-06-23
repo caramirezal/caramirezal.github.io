@@ -21,7 +21,7 @@ We will run a PCA using the already calculated top 1000 HVGs using the function 
 
 ```r
 pbmc.filtered <- RunPCA(pbmc.filtered, 
-                      features = VariableFeatures(pbmc.filtered))
+                        features = VariableFeatures(pbmc.filtered))
 ```
 
 We can assess the dimensionality, a measure of the complexity, by using an
@@ -56,6 +56,19 @@ the number of PC equal to 7.
  * Make a PCA plot showing the first 2 principal components 
  
 
+> Solution
 
+
+```r
+## First method
+pca <- Embeddings(pbmc.filtered, reduction = 'pca')
+
+## Second method
+pca <- pbmc.filtered@reductions$pca@cell.embeddings[1:5, 1:5]
+
+plot(pca[, 1:2])
+```
+
+<img src="04-Normalization_and_Dimensional_Reduction_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 

@@ -80,6 +80,7 @@ We can check the number of cell that passed the QC.
 
 ```{r}
 ncol(pbmc.filtered)
+pbmc.f
 ```
 
 ## Quizzes
@@ -117,6 +118,36 @@ Perform a QC using the downsampled 10 PBMC 250 cells data
 * Calculate and visualize QC metrics
 * Filter out cells based on the calculated values
 
+```{r}
+examp.matrix <- read.table('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.tsv',
+                           sep = '\t')
+
+examp.matrix %>% dim
+examp.matrix[1:5, 1:5]
+
+example.seurat <- CreateSeuratObject(
+  counts = examp.matrix, 
+  project = 'PBMC', 
+  assay = 'RNA', 
+  min.cells = 1, 
+  min.features = 1
+)
+
+example.seurat
+
+example.seurat[["percent.mt"]] <- PercentageFeatureSet(example.seurat, 
+                                                       pattern = "^MT-")
+example.seurat@meta.data %>% head
+
+VlnPlot(example.seurat, features = c('nCount_RNA', 
+                                     'nFeature_RNA',
+                                     'percent.mt'))
+
+pbmc.filtered <- subset(example.seurat, 
+                           nFeature_RNA < 1250 &
+                                nCount_RNA < 4000 & 
+                                    percent.mt < 5)
+```
 
 
 ## Normalization

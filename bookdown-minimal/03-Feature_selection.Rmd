@@ -75,9 +75,21 @@ by variance.
 
 
 ```{r, include=FALSE}
+rownames(pbmc.seurat) %>% head
+
+
+pbmc.filtered <- NormalizeData(pbmc.filtered) %>%
+                      ScaleData()
+
+norm.exp <- pbmc.filtered@assays$RNA@scale.data
+
 ## Extracting normalized values
 norm.exp <- FetchData(pbmc.filtered, 
                       vars=rownames(pbmc.filtered))
+
+norm.exp <- GetAssayData(pbmc.filtered, slot = 'scale.data')
+
+pbmc.seurat@assays$RNA@data[1:5, 1:5]
 
 ## Calculation of the variance in genes
 std.devs <- apply(norm.exp, 2, var)
