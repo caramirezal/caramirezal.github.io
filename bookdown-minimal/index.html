@@ -192,7 +192,7 @@ summary {
 
 
 <div id="intro" class="section level1">
-<h1>scRNA-Seq Course Syllabus</h1>
+<h1>0. First steps in scRNA-Seq analysis</h1>
 <p>We will use available data from 10X genomics of Peripheral Blood Mononuclear cells (PBMC). In order to speed up the process only a subset of 500 cells are going to be processed here. Here, we will perform the following tasks:</p>
 <ul>
 <li>Definition of a Seurat object from a matrix of counts</li>
@@ -245,6 +245,8 @@ pbmc.mtx &lt;- readRDS(url(pbmc_url))</code></pre>
 <blockquote>
 <p>Manipulation of count matrices</p>
 </blockquote>
+<!-- Quizz 1-->
+<strong>QUIZZ 1</strong> <br>
 <details>
 <summary>
 <em>What is the mean and median number of UMI counts in these cells?</em> <br> a) median = 301, mean = 343 <br> b) median = 11304, mean = 10432 <br> c) median = 2216, mean = 2354
@@ -252,14 +254,23 @@ pbmc.mtx &lt;- readRDS(url(pbmc_url))</code></pre>
 <p><br> <b>Answer:</b> <br> <code>umi.sum &lt;- apply(pbmc.mtx, 2, sum)</code> <br> <code>summary(umi.sum)</code></p>
 <code>Min. 1st Qu.  Median    Mean 3rd Qu.    Max.</code> <br> <code>561      1741      2216      2354      2746      7928</code>
 </details>
-<br>
-<details>
+<!-- Quizz 2-->
+<br> <strong>QUIZZ 2</strong> <br>
 <summary>
-<em>What are the top genes with highest number of UMI counts in decreasing order?</em> <br> a) MALAT1, B2M, TMSB4X, RPL10, RPL13, RPL13A <br> b) RPL13, MALAT1, B2M, TMSB4X, RPL10, RPL13A <br> c) B2M, TMSB4X, RPL13A, RPL10, RPL13, MALAT1
+<em>What are the top genes with the highest number of UMI counts in decreasing order?</em> <br> a) MALAT1, B2M, TMSB4X, RPL10, RPL13, RPL13A <br> b) RPL13, MALAT1, B2M, TMSB4X, RPL10, RPL13A <br> c) B2M, TMSB4X, RPL13A, RPL10, RPL13, MALAT1
 </summary>
-<p><br> <b>Answer:</b> <br> <br> <code>## Getting sum of umi counts per row (gene)</code> <br> <code>umi.sum.gene &lt;- apply(pbmc.mtx, 1, sum)</code> <br></p>
-<code>## Sorting and showing top 6 genes with highest number of UMIs</code> <br> <code>sort(umi.sum.gene, decreasing = TRUE) %&gt;% head()</code> <br> <code>MALAT1    B2M TMSB4X  RPL10  RPL13 RPL13A</code> <br> <code>28672  22976  22741  16616  14179  13975</code>
-</details>
+<p>TIP: You can use the same approach from the previous quizz but now using rows. <br></p>
+<!-- Quizz 3-->
+<strong>QUIZZ 3</strong> <br>
+<summary>
+<em>Evaluate the degree of zero inflation in the data. Calculate the fraction of zeros in the count matrix.</em> <br> a) 0.3105930 <br> b) 0.8283542 <br> c) 0.7485923
+</summary>
+<p>TIP: Calculate the number of entries with bigger than 0 as follows: <code>sum(pbmc.mtx[pbmc.mtx&gt;0])</code>. And then divide by the total number of entries in the matrix.</p>
+<!--
+`sum(pbmc.mtx==0)/prod(dim(pbmc.mtx))`
+`0.9385724`
+-->
+<p><br></p>
 </div>
 </div>
 
