@@ -48,27 +48,32 @@ until we do not see further variability changes, in these case we can use
 the number of PC equal to 7.
 
 
-## Exercises
+## Quizzes
 
-> Manipulation of PCA embedded projection
+> Manipulation of matrix of PCA
 
- * Extract PCA embedding matrix
- * Make a PCA plot showing the first 2 principal components 
- 
-
-> Solution
+Load a seurat object using the following command:
 
 
 ```r
-## First method
-pca <- Embeddings(pbmc.filtered, reduction = 'pca')
-
-## Second method
-pca <- pbmc.filtered@reductions$pca@cell.embeddings[1:5, 1:5]
-
-plot(pca[, 1:2])
+pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.seu.rds'))
 ```
 
-<img src="04-Normalization_and_Dimensional_Reduction_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
+Perform the seurat standard pre-processing pipeline from the previous sections.
+Extract PCA embedding matrix and make a PCA plot showing the first 2 principal components. 
+
+<summary> *Which command(s) can be used to extract the PCA matrix from the seurat object?*
+<br>
+a) `pca <- Embeddings(pbmc.seurat, reduction = 'pca')`
+<br>
+b) `pca <- pbmc.seurat@reductions$pca@cell.embeddings`
+<br>
+c) `pca <- pbmc.seurat@pca$reductions@cell.embeddings`
+</summary>
+TIP: Use str(pbmc.seurat) to explore the slots present in the seurat object. Two options
+are correct.
+<br>
+
+
 
 

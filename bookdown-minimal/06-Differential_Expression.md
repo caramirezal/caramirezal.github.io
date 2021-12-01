@@ -107,7 +107,8 @@ pbmc.degs %>%
 <img src="06-Differential_Expression_files/figure-html/vulcano_plot-1.png" style="display: block; margin: auto;" />
 
 
-## Exercises
+<!--
+## Quizzes
 
 > Compare the DEGs from the above shown results with that calculated using the 10X PBMC 250 cells downsample data clusters in the previous exercises
 
@@ -116,8 +117,13 @@ pbmc.degs %>%
 url:
 `https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/degs_10x_pbmc.tsv`
 
- * Calculate the DEGs using the downsampled 10X PBMC 250 cells data with the clusters
+ * Calculate the DEGs using the down-sampled 10X PBMC 250 cells data with the clusters
  obtained using your parameters
  
  * Intersect both lists of genes 
+ 
 
+```r
+degs <- read.table('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/degs_10x_pbmc.tsv')
+```
+ -->

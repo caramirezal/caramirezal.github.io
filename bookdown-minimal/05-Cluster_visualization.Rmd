@@ -102,10 +102,46 @@ DimPlot(pbmc.filtered)
 ```
 
 
-## Exercise
+## Quizzes
 
 
-> Perform UMAP visualization with the 10x PBMC 250 cells with your own set
+> Perform a UMAP visualization with the 10x PBMC 200 cells with your own set
 of parameters
 
-* How does subsampling and parameters selection affects clustering?
+
+**EXERCISE**
+<br>
+Load a seurat object using the following command:
+
+```{r, loading_example}
+pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.seu.rds'))
+```
+
+Perform the data processing from the previous sections.
+
+```{r, quizz_solution, include=FALSE}
+pbmc.seurat<- NormalizeData(pbmc.seurat) %>%
+                      ScaleData()
+
+
+pbmc.seurat[["percent.mt"]] <- PercentageFeatureSet(pbmc.seurat, 
+                                                       pattern = "^MT-")
+
+pbmc.seurat <- subset(pbmc.seurat, 
+                           nFeature_RNA < 1250 &
+                                nCount_RNA < 4000 & 
+                                    percent.mt < 5)
+
+pbmc.seurat <- FindVariableFeatures(pbmc.seurat, nfeatures = 1000)
+
+pbmc.seurat <- RunPCA(pbmc.seurat, npcs = 20)
+
+pbmc.seurat <- RunUMAP(pbmc.seurat, dims = 1:20)
+
+DimPlot(pbmc.seurat)
+```
+
+
+*Address how does subsampling and parameters selection affects clustering? How
+many clusters can you observe by using your own selected parameters*
+

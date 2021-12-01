@@ -58,7 +58,7 @@ dim(pbmc.mtx)
 
 
 As can be seen from the output of the function `dim()` the matrix contains `r nrow(pbmc.mtx)` rows (genes) 
-and `r ncol(pmbc.mtx)` columns (cells).
+and `r ncol(pbmc.mtx)` columns (cells).
 
 
 

@@ -114,10 +114,27 @@ DimPlot(pbmc.filtered)
 <img src="05-Cluster_visualization_files/figure-html/umap_plot-1.png" style="display: block; margin: auto;" />
 
 
-## Exercise
+## Quizzes
 
 
-> Perform UMAP visualization with the 10x PBMC 250 cells with your own set
+> Perform a UMAP visualization with the 10x PBMC 200 cells with your own set
 of parameters
 
-* How does subsampling and parameters selection affects clustering?
+
+**EXERCISE**
+<br>
+Load a seurat object using the following command:
+
+
+```r
+pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.seu.rds'))
+```
+
+Perform the data processing from the previous sections.
+
+
+
+
+*Address how does subsampling and parameters selection affects clustering? How
+many clusters can you observe by using your own selected parameters*
+

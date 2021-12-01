@@ -80,14 +80,52 @@ We can check the number of cell that passed the QC.
 
 ```{r}
 ncol(pbmc.filtered)
-pbmc.f
 ```
+
+
+
+
+
+
+
+## Normalization
+
+There are several methods for normalization of scRNA-Seq data. A commonly
+used strategy is the log normalization which basically corrects sequencing
+deep in cells by dividing each feature by the total number of counts and
+then multiplied the result by a factor, usually 10000, and finally the
+values are log transformed.
+
+Log normalization can be implemented by using the `NormalizeData()` function.
+
+```{r, normalization}
+pbmc.filtered <- NormalizeData(pbmc.filtered)
+```
+
+Then, in order to make genes measurements more comparable log transformed
+values are scaled in a way that the media is equal to zero and the variance
+is equal to 1 as follows:
+
+```{r, scaling}
+pbmc.filtered <- ScaleData(pbmc.filtered)
+```
+
 
 ## Quizzes
 
+
+> Performing your own QC
+
 <br>
+**QUIZZ 1**
 <details>
 <summary> *How are the number of features and UMI counts related?* 
+<br>
+a) They are not related and randomly distributed in a scatter plot
+<br>
+b) They are related in a non-linear way
+<br>
+c) They are linearly related
 <br>
 TIP: Use the function FeatureScatter, inspect the manual using ?function.
 </summary>
@@ -108,17 +146,37 @@ FeatureScatter(pbmc.filtered, feature1 = "nCount_RNA", feature2 = "nFeature_RNA"
 dev.off()
 ```
 
-## Exercises
+<br>
+
+**QUIZZ 2**
+<br>
+Load a seurat object using the following command:
+
+```{r, loading_example}
+pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.seu.rds'))
+```
 
 
-> Performing your own QC
+*Calculate the mean and median values of the percentage of mitochondrial reads*
+<br>
+a) mean=2.2133 and median=2.0532
+<br>
+b) mean=2.2246 and median=2.0639
+<br>
+c) mean=0.0102. and median=1.1743
+<br>
 
-Perform a QC using the downsampled 10 PBMC 250 cells data
+```{r, qc_metrics_exercise_1, include=FALSE}
+pbmc.seurat[["percent.mt"]] <- PercentageFeatureSet(pbmc.seurat, pattern = "^MT-")
+summary(pbmc.seurat$percent.mt)
+```
 
-* Calculate and visualize QC metrics
-* Filter out cells based on the calculated values
 
-```{r}
+*Filter out cells based on QC values*
+<br>
+NOTE: Do not skip any step in the pipeline.
+
+```{r, example_matrix,include=FALSE}
 examp.matrix <- read.table('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_250_cells.tsv',
                            sep = '\t')
 
@@ -148,27 +206,3 @@ pbmc.filtered <- subset(example.seurat,
                                 nCount_RNA < 4000 & 
                                     percent.mt < 5)
 ```
-
-
-## Normalization
-
-There are several methods for normalization of scRNA-Seq data. A commonly
-used strategy is the log normalization which basically corrects sequencing
-deep in cells by dividing each feature by the total number of counts and
-then multiplied the result by a factor, usually 10000, and finally the
-values are log transformed.
-
-Log normalization can be implemented by using the `NormalizeData()` function.
-
-```{r, normalization}
-pbmc.filtered <- NormalizeData(pbmc.filtered)
-```
-
-Then, in order to make genes measurements more comparable log transformed
-values are scaled in a way that the media is equal to zero and the variance
-is equal to 1 as follows:
-
-```{r, scaling}
-pbmc.filtered <- ScaleData(pbmc.filtered)
-```
-
