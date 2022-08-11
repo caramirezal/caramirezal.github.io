@@ -1,0 +1,78 @@
+---
+title: "Tipos de variables en R"
+author: "Carlos Ramirez"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+
+Existen cuatro tipos de variables atómicas en R las cuales son
+números reales, enteros, cadenas de caracteres y variables 
+lógicas.
+
+Estas variables se pueden usar en combinación con operaciones
+básicas, por ejemplo, suma (+), resta (-), multiplicación (*), división (/)
+y operaciones lógicas.
+
+
+
+## Asignación de valores a variables
+
+Una variable es cualquier cosa que ocupa un lugar en la memoria.
+A cada variable se le asocia uno o varios valores.
+Nótese la sintáxis de asignación (`<-`).
+
+```{r}
+a <- 3.1416
+print(a)
+```
+El símbolo `=` también puede utilizarse para asignar valores
+
+```{r}
+a = 3.1416
+a     ## Note that we don't need to use print(a)
+```
+
+
+
+## Usando R como una calculadora
+
+### Operaciones aritméticas
+
+```{r}
+a <- 100*( 3.1416 + 0.999 ) / 3
+a
+```
+
+
+```{r}
+b <- ( a**2 ) + 3*a
+b
+```
+
+## Operaciones lógicas
+
+```{r}
+TRUE & FALSE
+```
+
+```{r}
+A <- TRUE | FALSE
+```
+
+
+## Operaciones con texto
+
+```{r}
+cadena <- 'Trópico para qué me diste las manos de sol'
+cadena
+```
+
+## R es sensible a mayúsculas
+
+```{r}
+var1 <- 1
+# vaR1s This will rise an error
+```
+
+
