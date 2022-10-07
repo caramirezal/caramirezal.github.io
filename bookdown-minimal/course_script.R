@@ -22,6 +22,11 @@ pbmc.seurat <- CreateSeuratObject(
   min.features = 1
 )
 
+gene.expression <- pbmc.mtx['ACTB', ]
+ge.log <- log(gene.expression+1) / sum(gene.expression)
+hist(gene.expression, breaks = 30)
+hist(ge.log, breaks = 30)
+
 pbmc.seurat[["percent.mt"]] <- PercentageFeatureSet(pbmc.seurat, pattern = "^MT-")
 
 pbmc.filtered <- subset(pbmc.seurat,
@@ -46,6 +51,8 @@ pbmc.filtered <- FindClusters(pbmc.filtered,
 pbmc.filtered <- RunUMAP(pbmc.filtered,
                          dims = 1:7,
                          verbose = FALSE)
+
+DimPlot(pbmc.filtered)
 
 Idents(pbmc.filtered) <- pbmc.filtered$seurat_clusters
 
