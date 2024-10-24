@@ -79,7 +79,7 @@ pbmc.seurat$nCount_RNA %>% head
  
  
 ```{r}
-pbmc.seurat@assays$RNA@counts[1:5, 1:5]
+pbmc.seurat[['RNA']]$counts[1:5, 1:5]
 ```
 
 
@@ -108,6 +108,7 @@ Load a seurat object using the following command:
 
 ```{r, loading_example}
 pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_500_cells.rds'))
+
 ```
 
 <br>

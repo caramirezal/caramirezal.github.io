@@ -31,7 +31,7 @@ in R to get information about the parameters that are need to be provided to the
  
 
 
-```r
+``` r
 library(Seurat)
 
 pbmc.seurat <- CreateSeuratObject(
@@ -47,7 +47,7 @@ The variable `pbmc.seurat` now contains the Seurat object that we can feed into 
 If we print the variable we get information about the number of genes and cells.
 
 
-```r
+``` r
 pbmc.seurat
 ```
 
@@ -55,6 +55,7 @@ pbmc.seurat
 ## An object of class Seurat 
 ## 12673 features across 500 samples within 1 assay 
 ## Active assay: RNA (12673 features, 0 variable features)
+##  1 layer present: counts
 ```
 
 ## Exploring the Seurat object
@@ -70,7 +71,7 @@ is calculated and added to the metadata. We can explore this metric by accessing
 as follows.
 
 
-```r
+``` r
 pbmc.seurat$nCount_RNA %>% head
 ```
 
@@ -86,8 +87,8 @@ pbmc.seurat$nCount_RNA %>% head
  
  
 
-```r
-pbmc.seurat@assays$RNA@counts[1:5, 1:5]
+``` r
+pbmc.seurat[['RNA']]$counts[1:5, 1:5]
 ```
 
 ```
@@ -117,7 +118,7 @@ object and then plot it using an histogram.
 
 
 
-```r
+``` r
 actin <- FetchData(pbmc.seurat, vars = 'ACTB')
 hist(actin$ACTB)
 ```
@@ -134,7 +135,7 @@ hist(actin$ACTB)
 Load a seurat object using the following command:
 
 
-```r
+``` r
 pbmc.seurat <- readRDS(url('https://raw.githubusercontent.com/caramirezal/caramirezal.github.io/master/bookdown-minimal/data/pbmc_10X_500_cells.rds'))
 ```
 
